@@ -1,0 +1,1 @@
+include  ':app' , ':monkeykingbar-processor', ':monkeykingbar-lib'//,':app'
