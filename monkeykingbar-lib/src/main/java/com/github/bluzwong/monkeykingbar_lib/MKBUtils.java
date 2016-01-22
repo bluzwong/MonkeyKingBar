@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
@@ -41,7 +42,53 @@ public class MKBUtils {
         return bytes;
     }
 
+    private static final Class[] defaultTypes = new Class[] {
+            Boolean.class, Byte.class,
+            Short.class, Character.class,
+            Integer.class, Long.class,
+            Float.class, Double.class,
+            String.class, CharSequence.class,
+            Parcelable.class, Serializable.class
+    };
 
+    public static boolean isDefaultType(Object obj) {
+        for (Class type : defaultTypes) {
+            if (type.isInstance(obj)) {
+                return true;
+            }
+        }
+
+        if (obj instanceof Boolean[]
+                || obj instanceof Byte[]
+                || obj instanceof Short[]
+                || obj instanceof Character[]
+                || obj instanceof Integer[]
+                || obj instanceof Long[]
+                || obj instanceof Float[]
+                || obj instanceof Double[]
+                || obj instanceof String[]
+                || obj instanceof CharSequence[]
+                || obj instanceof Parcelable[]
+                || obj instanceof Serializable[]) {
+
+            return true;
+        }
+
+
+            if (obj instanceof ArrayList) {
+                try {
+                    Method method = obj.getClass().getMethod("get", null);
+                    Class returnType = method.getReturnType();
+                    if (Parcelable.class == returnType) {
+                        return true;
+                    }
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        return false;
+    }
 
     public static Object getExtra(Intent intent, String name) {
         if (intent == null) {
@@ -57,9 +104,46 @@ public class MKBUtils {
         return bundle.get(name);
     }
 
-    public static Bundle putExtra(Bundle bundle, String name, Object value) {
+    public static Object getExtraViaByteArray(Intent intent, String name) {
+        if (intent == null) {
+            return null;
+        }
+        return getExtraViaByteArray(intent.getExtras(), name);
+    }
+
+    public static Object getExtraViaByteArray(Bundle bundle, String name) {
+        if (bundle == null) {
+            return null;
+        }
+        return byteArrayToObject(bundle.getByteArray(name));
+    }
+
+    public static Bundle putExtraViaByteArray(Bundle bundle, String name, Object value) {
+        if (bundle == null) {
+            return null;
+        }
         putExtra(bundle, name, objectToByteArray(value));
         return bundle;
+    }
+
+    public static Intent putExtraViaByteArray(Intent intent, String name, Object value) {
+        if (intent == null) {
+            return null;
+        }
+        putExtraViaByteArray(intent.getExtras(), name, value);
+        return intent;
+    }
+
+    @Deprecated
+    public static Bundle putExtra(Bundle bundle, String name, Object value) {
+        // add for compile
+        return bundle;
+    }
+
+    @Deprecated
+    public static Intent putExtra(Intent intent, String name, Object value) {
+        // add for compile
+        return intent;
     }
 
     public static Bundle putExtra(Bundle bundle, String name, boolean value) {
@@ -122,25 +206,25 @@ public class MKBUtils {
         return bundle;
     }
 
-    public static Bundle putParcelableArrayListExtra(Bundle bundle, String name, ArrayList<? extends Parcelable> value) {
+    public static Bundle putExtra(Bundle bundle, String name, ArrayList<? extends Parcelable> value) {
         bundle.putParcelableArrayList(name, value);
         return bundle;
     }
 
-    public static Bundle putIntegerArrayListExtra(Bundle bundle, String name, ArrayList<Integer> value) {
+   /* public static Bundle putExtra(Bundle bundle, String name, ArrayList<Integer> value) {
         bundle.putIntegerArrayList(name, value);
         return bundle;
     }
 
-    public static Bundle putStringArrayListExtra(Bundle bundle, String name, ArrayList<String> value) {
+    public static Bundle putExtra(Bundle bundle, String name, ArrayList<String> value) {
         bundle.putStringArrayList(name, value);
         return bundle;
     }
 
-    public static Bundle putCharSequenceArrayListExtra(Bundle bundle, String name, ArrayList<CharSequence> value) {
+    public static Bundle putExtra(Bundle bundle, String name, ArrayList<CharSequence> value) {
         bundle.putCharSequenceArrayList(name, value);
         return bundle;
-    }
+    }*/
 
     public static Bundle putExtra(Bundle bundle, String name, Serializable value) {
         bundle.putSerializable(name, value);

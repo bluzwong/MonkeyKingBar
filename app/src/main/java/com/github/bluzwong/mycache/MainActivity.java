@@ -13,13 +13,9 @@ public class MainActivity extends AppCompatActivity {
     @InjectExtra
     int ccf;
 
+    @InjectExtra
     @KeepState
-    ArrayList<String> datas = new ArrayList<>();
-    {
-        for (int i = 0; i < 10000; i++) {
-            datas.add("string " + i);
-        }
-    }
+    String wsd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,10 +25,11 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         initBtn();
-        // ok
         MonkeyKingBar.injectExtras(this);
-        // testing
         MonkeyKingBar.keepStateOnCreate(this, savedInstanceState);
+        Log.i("bruce ", "on create ccf => " + ccf + " wsd => " + wsd);
+        ccf = 250;
+        wsd = "oncreate change wsd";
     }
 
 
@@ -48,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 Log.i("bruce", "start main activity ccf => " + 123);
-                MainActivity_MKB.startActivity(MainActivity.this, 123);
+                MainActivity_MKB.startActivity(MainActivity.this, 123, "wsd haha");
             }
         });
 
