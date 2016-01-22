@@ -27,7 +27,7 @@ public class KeepFieldInjector {
 
         //builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \""+ PREFIX + fieldName +"\");\n");
 
-        builder.append("if ("+ fieldName +"_defaultType) {\n");
+        builder.append("if ("+ fieldName +"_defaultType_keep) {\n");
         builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \""+ PREFIX + fieldName +"\");\n");
 
         builder.append("} else {\n");
@@ -44,10 +44,9 @@ public class KeepFieldInjector {
 
     public String brewGetStartIntent() {
         StringBuilder builder = new StringBuilder();
-        builder.append("MKBUtils.putExtra(outState, \""+ PREFIX + fieldName +"\", target." + fieldName + ");\n");
 
-        builder.append(fieldName +"_defaultType = MKBUtils.isDefaultType(target."  +fieldName+");\n");
-        builder.append("if ("+ fieldName +"_defaultType) {\n");
+        builder.append(fieldName +"_defaultType_keep = MKBUtils.isDefaultType(target."  +fieldName+");\n");
+        builder.append("if ("+ fieldName +"_defaultType_keep) {\n");
         builder.append("MKBUtils.putExtra(outState,").append( "\"" + PREFIX + fieldName +"\", target. " + fieldName).append(");");
         builder.append("} else {\n");
         builder.append("MKBUtils.putExtraViaByteArray(outState,").append( "\"" + PREFIX + fieldName +"\", target. " + fieldName).append(");");

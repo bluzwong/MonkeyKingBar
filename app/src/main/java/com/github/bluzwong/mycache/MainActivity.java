@@ -11,11 +11,12 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     @InjectExtra
+    @KeepState
     int ccf;
 
     @InjectExtra
     @KeepState
-    String wsd;
+    String string;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,13 +24,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         initBtn();
+
         MonkeyKingBar.injectExtras(this);
         MonkeyKingBar.keepStateOnCreate(this, savedInstanceState);
-        Log.i("bruce ", "on create ccf => " + ccf + " wsd => " + wsd);
-        ccf = 250;
-        wsd = "oncreate change wsd";
+        Log.i("bruce ", "on create ccf => " + ccf);
     }
 
 
@@ -44,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_rx).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                Log.i("bruce", "start main activity ccf => " + 123);
-                MainActivity_MKB.startActivity(MainActivity.this, 123, "wsd haha");
+
+                MainActivity_MKB.startActivity(MainActivity.this, 123, "hhh");
             }
         });
 

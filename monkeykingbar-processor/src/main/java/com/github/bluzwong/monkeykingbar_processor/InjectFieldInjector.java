@@ -1,8 +1,6 @@
 package com.github.bluzwong.monkeykingbar_processor;
 
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by wangzhijie@wind-mobi.com on 2015/9/24.
@@ -29,7 +27,7 @@ public class InjectFieldInjector {
 
     public String brewInjectExtrasJava() {
         StringBuilder builder = new StringBuilder();
-        builder.append("if ("+ fieldName +"_defaultType) {\n");
+        builder.append("if ("+ fieldName +"_defaultType_inject) {\n");
         builder.append(" obj = MKBUtils.getExtra(intent, \""+ PREFIX + fieldName +"\");\n");
 
         builder.append("} else {\n");
@@ -45,9 +43,9 @@ public class InjectFieldInjector {
     public String brewGetStartIntent() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(fieldName +"_defaultType = MKBUtils.isDefaultType("  +fieldName+");\n");
-        builder.append("if ("+ fieldName +"_defaultType) {\n");
-        builder.append("intent.putExtra(\""+ PREFIX + fieldName +"\", " + fieldName + ");\n");
+        builder.append(fieldName +"_defaultType_inject = MKBUtils.isDefaultType("  +fieldName+");\n");
+        builder.append("if ("+ fieldName +"_defaultType_inject) {\n");
+        builder.append("MKBUtils.putExtra(intent,\""+ PREFIX + fieldName +"\", " + fieldName + ");\n");
         builder.append("} else {\n");
         builder.append("MKBUtils.putExtraViaByteArray(intent,").append( "\"" + PREFIX + fieldName +"\", " + fieldName).append(");");
         builder.append("}\n");

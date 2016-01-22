@@ -1,5 +1,8 @@
 package com.github.bluzwong.monkeykingbar_processor;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -12,7 +15,6 @@ public class ClassInjector {
     private final String originClassName;
     private final Set<InjectFieldInjector> injectFields;
     private final Set<KeepFieldInjector> keepFields;
-    private final List<String> fieldBool = new ArrayList<String>();
     private boolean needInject = false, needKeep = false;
     private static final String SUFFIX = "_MKB";
 
@@ -80,17 +82,11 @@ public class ClassInjector {
         // static fields
 
         for (InjectFieldInjector field : injectFields) {
-            if (!fieldBool.contains(field.getFieldName())) {
-                builder.append("private static boolean ").append(field.getFieldName()).append("_defaultType").append(";\n");
-                fieldBool.add(field.getFieldName());
-            }
+                builder.append("private static boolean ").append(field.getFieldName()).append("_defaultType_inject").append(";\n");
         }
 
         for (KeepFieldInjector field : keepFields) {
-            if (!fieldBool.contains(field.getFieldName())) {
-                builder.append("private static boolean ").append(field.getFieldName()).append("_defaultType").append(";\n");
-                fieldBool.add(field.getFieldName());
-            }
+                builder.append("private static boolean ").append(field.getFieldName()).append("_defaultType_keep").append(";\n");
         }
         // injectFields
         if (needInject) {
@@ -233,12 +229,31 @@ public class ClassInjector {
         return builder.toString();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchMethodException {
         ClassInjector classInjector = new ClassInjector("com.github.bluzwong.mycache", "MainActivity");
         classInjector.addInjectField(new InjectFieldInjector("ccf", "String"));
         System.out.println(classInjector.brewJava());
         int[] ints = {1};
         System.out.println(ints.getClass().getCanonicalName());
         System.out.println(ints.getClass().getTypeName());
+
+        System.out.println("String.class.isAssignableFrom(Object.class) => " + String.class.isAssignableFrom(Object.class));
+        System.out.println("Object.class.isAssignableFrom(String.class) => " + Object.class.isAssignableFrom(String.class));
+
+        List<String> testList = new ArrayList<>();
+        testList.add("ccf");
+        Object obj = testList;
+
+
+        if (obj instanceof ArrayList) {
+            if (((ArrayList) obj).size()>0) {
+                Object o = ((ArrayList) obj).get(0);
+                System.out.println("simple name => " + o.getClass().getSimpleName());
+                if (o instanceof String) {
+                    System.out.println(" o is string");
+                }
+            }
+        }
+
     }
 }

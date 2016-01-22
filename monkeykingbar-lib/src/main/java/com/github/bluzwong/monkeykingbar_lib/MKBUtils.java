@@ -42,7 +42,7 @@ public class MKBUtils {
         return bytes;
     }
 
-    private static final Class[] defaultTypes = new Class[] {
+    private static final Class[] defaultTypes = new Class[]{
             Boolean.class, Byte.class,
             Short.class, Character.class,
             Integer.class, Long.class,
@@ -52,57 +52,50 @@ public class MKBUtils {
     };
 
     public static boolean isDefaultType(Object obj) {
+        if (obj == null) {
+            return true;
+        }
+        Class<?> objClass = obj.getClass();
+        if (objClass.isPrimitive()) {
+            return true;
+        }
+
         for (Class type : defaultTypes) {
             if (type.isInstance(obj)) {
                 return true;
             }
         }
 
-        if (obj instanceof Boolean[]
-                || obj instanceof Byte[]
-                || obj instanceof Short[]
-                || obj instanceof Character[]
-                || obj instanceof Integer[]
-                || obj instanceof Long[]
-                || obj instanceof Float[]
-                || obj instanceof Double[]
-                || obj instanceof String[]
-                || obj instanceof CharSequence[]
-                || obj instanceof Parcelable[]
-                || obj instanceof Serializable[]) {
+        if (objClass.isArray()) {
+            Class<?> arrayType = objClass.getComponentType();
+            if (arrayType.isPrimitive()) {
+                return true;
+            }
 
-            return true;
+            for (Class defaultType : defaultTypes) {
+                if (defaultType.isAssignableFrom(arrayType)) {
+                    return true;
+                }
+            }
         }
 
 
-            if (obj instanceof ArrayList) {
-                try {
-                    Method method = obj.getClass().getMethod("get", null);
-                    Class returnType = method.getReturnType();
-                    if (Parcelable.class == returnType) {
-                        return true;
-                    }
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
+        if (obj instanceof ArrayList) {
+            ArrayList arrObj = (ArrayList) obj;
+            if (arrObj.size()>0) {
+                Object o = arrObj.get(0);
+                if (o instanceof Parcelable
+                        || o instanceof Integer
+                        || o instanceof String
+                        || o instanceof CharSequence) {
+                    return true;
                 }
             }
-
+        }
         return false;
     }
 
-    public static Object getExtra(Intent intent, String name) {
-        if (intent == null) {
-            return null;
-        }
-        return getExtra(intent.getExtras(), name);
-    }
 
-    public static Object getExtra(Bundle bundle, String name) {
-        if (bundle == null) {
-            return null;
-        }
-        return bundle.get(name);
-    }
 
     public static Object getExtraViaByteArray(Intent intent, String name) {
         if (intent == null) {
@@ -117,6 +110,7 @@ public class MKBUtils {
         }
         return byteArrayToObject(bundle.getByteArray(name));
     }
+
 
     public static Bundle putExtraViaByteArray(Bundle bundle, String name, Object value) {
         if (bundle == null) {
@@ -145,6 +139,25 @@ public class MKBUtils {
         // add for compile
         return intent;
     }
+
+
+    public static Object getExtra(Intent intent, String name) {
+        if (intent == null) {
+            return null;
+        }
+        return getExtra(intent.getExtras(), name);
+    }
+
+    public static Object getExtra(Bundle bundle, String name) {
+        if (bundle == null) {
+            return null;
+        }
+        return bundle.get(name);
+    }
+
+    /**
+     * Bundle start
+     */
 
     public static Bundle putExtra(Bundle bundle, String name, boolean value) {
         bundle.putBoolean(name, value);
@@ -211,21 +224,6 @@ public class MKBUtils {
         return bundle;
     }
 
-   /* public static Bundle putExtra(Bundle bundle, String name, ArrayList<Integer> value) {
-        bundle.putIntegerArrayList(name, value);
-        return bundle;
-    }
-
-    public static Bundle putExtra(Bundle bundle, String name, ArrayList<String> value) {
-        bundle.putStringArrayList(name, value);
-        return bundle;
-    }
-
-    public static Bundle putExtra(Bundle bundle, String name, ArrayList<CharSequence> value) {
-        bundle.putCharSequenceArrayList(name, value);
-        return bundle;
-    }*/
-
     public static Bundle putExtra(Bundle bundle, String name, Serializable value) {
         bundle.putSerializable(name, value);
         return bundle;
@@ -285,4 +283,114 @@ public class MKBUtils {
         bundle.putBundle(name, value);
         return bundle;
     }
+
+    /** Bundle start */
+
+
+    /**
+     * Intent start
+     */
+
+    public static Intent putExtra(Intent intent, String name, boolean value) {
+        return intent.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent intent, String name, byte value) {
+        return intent.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent intent, String name, char value) {
+        return intent.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent intent, String name, short value) {
+        return intent.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent intent, String name, int value) {
+        return intent.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent intent, String name, long value) {
+        return intent.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, float value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, double value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, String value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, CharSequence value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, Parcelable value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, Parcelable[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, ArrayList<? extends Parcelable> value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, Serializable value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, boolean[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, byte[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, short[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, char[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, int[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, long[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, float[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, double[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, String[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, CharSequence[] value) {
+        return bundle.putExtra(name, value);
+    }
+
+    public static Intent putExtra(Intent bundle, String name, Bundle value) {
+        return bundle.putExtra(name, value);
+    }
+
+    /** Bundle start */
+
 }
