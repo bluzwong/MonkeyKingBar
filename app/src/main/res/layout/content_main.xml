@@ -14,22 +14,31 @@
         tools:showIn="@layout/activity_main"
         tools:context=".MainActivity">
 
-    <Button android:id="@+id/btn_sync"
+    <TextView
+            android:id="@+id/tv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="同步请求"
-            android:layout_marginTop="50dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="null"
             />
-        <Button android:id="@+id/btn_async"
+    <ScrollView
+            android:id="@+id/scroll"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            >
+        <TextView
+                android:id="@+id/tv_msg"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="异步请求"
-                android:layout_marginTop="50dp"
+                android:layout_height="match_parent"
                 />
+
+    </ScrollView>
         <Button android:id="@+id/btn_rx"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="rxjava请求"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="启动activity"
                 android:layout_marginTop="50dp"
                 />
 </LinearLayout>

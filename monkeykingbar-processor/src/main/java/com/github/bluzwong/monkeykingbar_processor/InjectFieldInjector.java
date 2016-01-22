@@ -1,6 +1,7 @@
 package com.github.bluzwong.monkeykingbar_processor;
 
 
+import java.util.UUID;
 
 /**
  * Created by wangzhijie@wind-mobi.com on 2015/9/24.
@@ -9,11 +10,12 @@ public class InjectFieldInjector {
 
 
     private String fieldName, fieldType;
-
     public static final String PREFIX = "MKB_";
+    private String key = "";
     public InjectFieldInjector(String fieldName, String fieldType) {
         this.fieldName = fieldName;
         this.fieldType = fieldType;
+        this.key = PREFIX + fieldName + "@" + UUID.randomUUID();
     }
 
 
@@ -27,12 +29,8 @@ public class InjectFieldInjector {
 
     public String brewInjectExtrasJava() {
         StringBuilder builder = new StringBuilder();
-        builder.append("if ("+ fieldName +"_defaultType_inject) {\n");
-        builder.append(" obj = MKBUtils.getExtra(intent, \""+ PREFIX + fieldName +"\");\n");
+        builder.append(" obj = MKBUtils.getExtra(intent, \""+ key +"\");\n");
 
-        builder.append("} else {\n");
-        builder.append(" obj = MKBUtils.getExtraViaByteArray(intent, \""+ PREFIX + fieldName +"\");\n");
-        builder.append("}\n");
         builder.append(" if (obj != null) { ");
         builder.append("    target." + fieldName + " = ("+ fieldType +") obj;");
         builder.append(" }");
@@ -40,22 +38,17 @@ public class InjectFieldInjector {
         return builder.toString();
     }
 
-    public String brewGetStartIntent() {
+
+    public String brewPutExtra() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(fieldName +"_defaultType_inject = MKBUtils.isDefaultType("  +fieldName+");\n");
-        builder.append("if ("+ fieldName +"_defaultType_inject) {\n");
-        builder.append("MKBUtils.putExtra(intent,\""+ PREFIX + fieldName +"\", " + fieldName + ");\n");
-        builder.append("} else {\n");
-        builder.append("MKBUtils.putExtraViaByteArray(intent,").append( "\"" + PREFIX + fieldName +"\", " + fieldName).append(");");
-        builder.append("}\n");
+        builder.append("MKBUtils.putExtra(intent,\""+ key +"\", " + fieldName + ");\n");
 
         return builder.toString();
     }
 
     public static void main(String[] args) {
         System.out.println(new InjectFieldInjector("ccf", "String").brewInjectExtrasJava());
-        System.out.println(new InjectFieldInjector("ccf", "String").brewGetStartIntent());
     }
 
 }

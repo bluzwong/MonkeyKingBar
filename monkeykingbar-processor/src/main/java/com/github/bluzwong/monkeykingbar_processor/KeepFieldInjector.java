@@ -1,6 +1,8 @@
 package com.github.bluzwong.monkeykingbar_processor;
 
 
+import java.util.UUID;
+
 /**
  * Created by wangzhijie@wind-mobi.com on 2015/9/24.
  */
@@ -10,9 +12,11 @@ public class KeepFieldInjector {
     private String fieldName, fieldType;
 
     public static final String PREFIX = "MKB_";
+    private String key = "";
     public KeepFieldInjector(String fieldName, String fieldType) {
         this.fieldName = fieldName;
         this.fieldType = fieldType;
+        this.key = PREFIX + fieldName + "@" + UUID.randomUUID();
     }
 
     public String getFieldName() {
@@ -25,14 +29,9 @@ public class KeepFieldInjector {
     public String brewOnCreateJava() {
         StringBuilder builder = new StringBuilder();
 
-        //builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \""+ PREFIX + fieldName +"\");\n");
 
-        builder.append("if ("+ fieldName +"_defaultType_keep) {\n");
-        builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \""+ PREFIX + fieldName +"\");\n");
+        builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \""+ key +"\");\n");
 
-        builder.append("} else {\n");
-        builder.append(" obj = MKBUtils.getExtraViaByteArray(savedInstanceState, \""+ PREFIX + fieldName +"\");\n");
-        builder.append("}\n");
 
 
         builder.append(" if (obj != null) { ");
@@ -45,12 +44,7 @@ public class KeepFieldInjector {
     public String brewGetStartIntent() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(fieldName +"_defaultType_keep = MKBUtils.isDefaultType(target."  +fieldName+");\n");
-        builder.append("if ("+ fieldName +"_defaultType_keep) {\n");
-        builder.append("MKBUtils.putExtra(outState,").append( "\"" + PREFIX + fieldName +"\", target. " + fieldName).append(");");
-        builder.append("} else {\n");
-        builder.append("MKBUtils.putExtraViaByteArray(outState,").append( "\"" + PREFIX + fieldName +"\", target. " + fieldName).append(");");
-        builder.append("}\n");
+        builder.append("MKBUtils.putExtra(outState,").append( "\"" + key +"\", target. " + fieldName).append(");");
 
 
         return builder.toString();

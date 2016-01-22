@@ -81,13 +81,7 @@ public class ClassInjector {
 
         // static fields
 
-        for (InjectFieldInjector field : injectFields) {
-                builder.append("private static boolean ").append(field.getFieldName()).append("_defaultType_inject").append(";\n");
-        }
 
-        for (KeepFieldInjector field : keepFields) {
-                builder.append("private static boolean ").append(field.getFieldName()).append("_defaultType_keep").append(";\n");
-        }
         // injectFields
         if (needInject) {
             builder.append("@Override                                                                                   \n");
@@ -105,11 +99,11 @@ public class ClassInjector {
 
 
             /*
-            public static Intent getStartIntent(Activity context, int ccf) {
-                Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra("ccf", ccf);
-                return intent;
-            }
+            public static Intent getStartIntent(Activity context, int ccf_base, java.lang.String string_base) {
+        Intent intent = new Intent(context, BaseActivity.class);
+        putExtra(intent, ccf_base, string_base);
+        return intent;
+    }
             */
 
             builder.append("public static Intent getStartIntent(Activity context");
@@ -117,11 +111,25 @@ public class ClassInjector {
             builder.append(") {\n");
 
             builder.append("Intent intent = new Intent(context, ").append(originClassName).append(".class);\n");
-            for (InjectFieldInjector field : injectFields) {
-                builder.append(field.brewGetStartIntent());
-            }
+            builder.append("putExtra(intent").append(getInjectParams()).append(");\n");
+
             builder.append("return intent;\n");
             builder.append("}\n");
+
+
+            /*
+            public static Intent putExtra(Intent intent, int ccf_base, java.lang.String string_base) {
+                MKBUtils.putExtra(intent, "MKB_ccf_base", ccf_base);
+                MKBUtils.putExtra(intent, "MKB_string_base", string_base);
+                return intent;
+            }
+            */
+
+            builder.append("public static Intent putExtra(Intent intent").append(getInjectTypeAndParams()).append(") {\n");
+            for (InjectFieldInjector field : injectFields) {
+                builder.append(field.brewPutExtra());
+            }
+            builder.append("return intent;}\n");
 
             /*
             public static void startActivity(Activity activity, int ccf) {
@@ -162,16 +170,16 @@ public class ClassInjector {
             builder.append("\n");
 
             builder.append("@Override\n");
-            builder.append("public void onCreate(Activity activity, Bundle savedInstanceState) {\n");
+            builder.append("public void onCreate(Object object, Bundle savedInstanceState) {\n");
 
-            builder.append("if (activity == null) {\n");
+            builder.append("if (object == null) {\n");
             builder.append("    throw new IllegalStateException();\n");
             builder.append("}\n");
             builder.append("if (savedInstanceState == null) {\n");
             builder.append("    return;\n");
             builder.append("}\n");
 
-            builder.append(originClassName).append(" target = (").append(originClassName).append(") activity;\n");
+            builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
             builder.append("Object obj;\n");
 
             for (KeepFieldInjector field : keepFields) {
@@ -196,11 +204,11 @@ public class ClassInjector {
             builder.append(" \n");
 
             builder.append("@Override \n");
-            builder.append("public void onSaveInstanceState(Activity activity, Bundle outState) { \n");
-            builder.append(" if (activity == null) {\n");
+            builder.append("public void onSaveInstanceState(Object object, Bundle outState) { \n");
+            builder.append(" if (object == null) {\n");
             builder.append("    throw new IllegalStateException();\n");
             builder.append("} \n");
-            builder.append(originClassName).append(" target = (").append(originClassName).append(") activity;\n");
+            builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
 
             for (KeepFieldInjector field : keepFields) {
                 builder.append(field.brewGetStartIntent());

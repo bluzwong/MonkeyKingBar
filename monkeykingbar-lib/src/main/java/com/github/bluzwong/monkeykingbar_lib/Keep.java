@@ -7,6 +7,6 @@ import android.os.Bundle;
  * Created by wangzhijie on 2016/1/22.
  */
 public interface Keep {
-    void onCreate(Activity activity, Bundle savedInstanceState);
-    void onSaveInstanceState(Activity activity, Bundle outState);
+    void onCreate(Object object, Bundle savedInstanceState);
+    void onSaveInstanceState(Object Object, Bundle outState);
 }

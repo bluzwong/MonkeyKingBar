@@ -1,4 +1,4 @@
-package com.github.bluzwong.mycache;
+package com.github.bluzwong.monkeykingbar;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
