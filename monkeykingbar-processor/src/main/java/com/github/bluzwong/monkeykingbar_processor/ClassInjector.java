@@ -1,8 +1,5 @@
 package com.github.bluzwong.monkeykingbar_processor;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -17,6 +14,7 @@ public class ClassInjector {
     private final Set<KeepFieldInjector> keepFields;
     private boolean needInject = false, needKeep = false;
     private static final String SUFFIX = "_MKB";
+    private String unserUUID = UUID.randomUUID().toString();
 
     public ClassInjector(String classPackage, String className) {
         // com.github.bluzwong.mycache
@@ -59,7 +57,7 @@ public class ClassInjector {
         builder.append("import android.app.Activity;\n");
         builder.append("import android.content.Intent;\n");
         builder.append("import android.os.Bundle;\n");
-
+        builder.append("import java.util.UUID;\n");
         // class and implements
         builder.append("public class ").append(this.className);
         if (needInject || needKeep) {
@@ -84,6 +82,7 @@ public class ClassInjector {
 
         // injectFields
         if (needInject) {
+            int index = 0;
             builder.append("@Override                                                                                   \n");
             builder.append("    public void injectExtras(Activity activity) {                                   \n");
             builder.append("        if (activity == null) {\n");
@@ -92,8 +91,18 @@ public class ClassInjector {
             builder.append(originClassName).append(" target = ( ").append(originClassName).append(" ) activity;\n");
             builder.append("Object obj = null;\n");
             builder.append("Intent intent = activity.getIntent();\n");
+
+            if (isInjectHasUnSerial()) {
+                builder.append("obj = MKBUtils.getExtra(intent, \"MKB@" + unserUUID +"\");\n");
+                builder.append(" String[] objs = (String[]) obj; \n");
+                builder.append("Object generalObj;\n");
+            }
+
             for (InjectFieldInjector field : injectFields) {
-                builder.append(field.brewInjectExtrasJava());
+                builder.append(field.brewInjectExtrasJava(index));
+                if (field.isUnSerializable()) {
+                    index++;
+                }
             }
             builder.append("}\n");
 
@@ -129,6 +138,25 @@ public class ClassInjector {
             for (InjectFieldInjector field : injectFields) {
                 builder.append(field.brewPutExtra());
             }
+
+            if (isInjectHasUnSerial()) {
+                builder.append("MKBUtils.putExtra(intent, \"MKB@"+unserUUID+"\", new String[] {");
+
+                boolean init = true;
+                for (InjectFieldInjector injectField : injectFields) {
+                    if (injectField.isUnSerializable()) {
+                        if (!init) {
+                            builder.append(", ");
+                        }
+                        init = false;
+                        String key = injectField.getFieldName() + "_key";
+                        builder.append(key);
+                    }
+                }
+
+                builder.append("} );\n");
+            }
+
             builder.append("return intent;}\n");
 
             /*
@@ -182,8 +210,18 @@ public class ClassInjector {
             builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
             builder.append("Object obj;\n");
 
+            if (isKeepHasUnSerial()) {
+                builder.append("obj = MKBUtils.getExtra(savedInstanceState, \"MKB@"+unserUUID+"\");");
+                builder.append("String[] objs = (String[]) obj;\n");
+                builder.append("Object generalObj;\n");
+
+            }
+            int index = 0;
             for (KeepFieldInjector field : keepFields) {
-                builder.append(field.brewOnCreateJava());
+                builder.append(field.brewOnCreateJava(index));
+                if (field.isUnSerializable()) {
+                    index++;
+                }
             }
 
             builder.append("}\n");
@@ -211,15 +249,50 @@ public class ClassInjector {
             builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
 
             for (KeepFieldInjector field : keepFields) {
-                builder.append(field.brewGetStartIntent());
+                builder.append(field.brewSaveState());
             }
 
+            if (isInjectHasUnSerial()) {
+                builder.append("MKBUtils.putExtra(outState, \"MKB@"+unserUUID+"\", new String[] {");
+
+                boolean init = true;
+                for (KeepFieldInjector keepInject : keepFields) {
+                    if (keepInject.isUnSerializable()) {
+                        if (!init) {
+                            builder.append(", ");
+                        }
+                        init = false;
+                        String key = keepInject.getFieldName() + "_key";
+                        builder.append(key);
+                    }
+                }
+
+                builder.append("} );\n");
+            }
             builder.append("} \n");
         }
 
         // end of class
         builder.append("}\n"); // end of class
         return builder.toString();
+    }
+
+    private boolean isInjectHasUnSerial() {
+        for (InjectFieldInjector injector : injectFields) {
+            if (injector.isUnSerializable()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isKeepHasUnSerial() {
+        for (KeepFieldInjector injector : keepFields) {
+            if (injector.isUnSerializable()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String getInjectParams() {
@@ -238,7 +311,7 @@ public class ClassInjector {
     }
 
     public static void main(String[] args) throws NoSuchMethodException {
-        ClassInjector classInjector = new ClassInjector("com.github.bluzwong.mycache", "MainActivity");
+        /*ClassInjector classInjector = new ClassInjector("com.github.bluzwong.mycache", "MainActivity");
         classInjector.addInjectField(new InjectFieldInjector("ccf", "String"));
         System.out.println(classInjector.brewJava());
         int[] ints = {1};
@@ -261,7 +334,7 @@ public class ClassInjector {
                     System.out.println(" o is string");
                 }
             }
-        }
+        }*/
 
     }
 }

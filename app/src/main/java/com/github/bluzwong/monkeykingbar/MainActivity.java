@@ -13,16 +13,20 @@ import java.util.Random;
 
 public class MainActivity extends BaseActivity {
 
+//    @UnSerializable
     @InjectExtra
     @KeepState
     int foo;
 
+//    @UnSerializable
     @InjectExtra
     @KeepState
     String bar;
 
+//    @UnSerializable
     @KeepState
     String msgs = "";
+
 
     @KeepState
     int count = 0;

@@ -12,6 +12,7 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.Writer;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -83,12 +84,25 @@ public class AnnotationProcessor extends AbstractProcessor{
 
                 ClassInjector injector = getOrCreateTargetClass(targetClassMap, className);
 
+                List<? extends AnnotationMirror> annotationMirrors = e.getAnnotationMirrors();
+                boolean isUnserializable = false;
+                for (AnnotationMirror annotationMirror : annotationMirrors) {
+                    String annotationType = annotationMirror.getAnnotationType().toString();
+                    log("annotationType => " + annotationType); // annotationType => com.github.bluzwong.monkeykingbar_lib.KeepState
+                    if (annotationType.equals("com.github.bluzwong.monkeykingbar_lib.UnSerializable")) {
+                        isUnserializable = true;
+                        log("isUnserializable => true");
+                        break;
+                    }
+                }
+
                 if (annoName.equals("InjectExtra")) {
-                    InjectFieldInjector injectFieldInjector = new InjectFieldInjector(fieldName.toString(), fieldType);
+                    log("InjectExtra => " + isUnserializable);
+                    InjectFieldInjector injectFieldInjector = new InjectFieldInjector(fieldName.toString(), fieldType, isUnserializable);
                     injector.addInjectField(injectFieldInjector);
                 }
                 if (annoName.equals("KeepState")) {
-                    KeepFieldInjector keepFieldInjector = new KeepFieldInjector(fieldName.toString(), fieldType);
+                    KeepFieldInjector keepFieldInjector = new KeepFieldInjector(fieldName.toString(), fieldType, isUnserializable);
                     injector.addKeepField(keepFieldInjector);
                 }
 

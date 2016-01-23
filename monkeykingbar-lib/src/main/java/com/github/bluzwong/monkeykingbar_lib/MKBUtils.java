@@ -7,12 +7,16 @@ import android.os.Parcelable;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Created by wangzhijie on 2016/1/22.
  */
 public class MKBUtils {
 
+    public static final Map<String, Object> maps = new WeakHashMap<>();
     public static Object getExtra(Intent intent, String name) {
         if (intent == null) {
             return null;
