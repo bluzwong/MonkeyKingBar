@@ -31,9 +31,14 @@ public class MainActivity extends BaseActivity {
     @KeepState
     int count = 0;
 
+    @UnSerializable
+    @InjectExtra
+    //@KeepState
+    MyClass myClass;
+
     TextView tvMsg;
     ScrollView scroll;
-
+    TextView tv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +50,7 @@ public class MainActivity extends BaseActivity {
         MonkeyKingBar.keepStateOnCreate(this, savedInstanceState);
         log("恢复字段完成");
 
-        ((TextView) findViewById(R.id.tv)).setText("foo => " + bar);
+        refreshTv();
         log("onCreate finish");
     }
 
@@ -60,6 +65,7 @@ public class MainActivity extends BaseActivity {
     private void initView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        tv = (TextView) findViewById(R.id.tv);
         tvMsg = (TextView) findViewById(R.id.tv_msg);
         scroll = (ScrollView) findViewById(R.id.scroll);
         initBtn();
@@ -74,14 +80,14 @@ public class MainActivity extends BaseActivity {
                 String bar = new Random().nextInt(100)+"";
                 if (new Random().nextBoolean()) {
                     // 简单启动activity 参数为@InjectExtra 所注解字段
-                    MainActivity_MKB.startActivity(MainActivity.this, foo, bar);
+                    MainActivity_MKB.startActivity(MainActivity.this, foo, bar, myClass);
                 } else {
                     // 复杂启动activity
                     int foo_base = new Random().nextInt(100);
                     String bar_base = new Random().nextInt(100)+"";
 
                     // 获取要启动的activity 添加数据
-                    Intent intent = MainActivity_MKB.getStartIntent(MainActivity.this, foo, bar);
+                    Intent intent = MainActivity_MKB.getStartIntent(MainActivity.this, foo, bar, myClass);
                     // 添加父类activity的数据
                     BaseActivity_MKB.putExtra(intent, foo_base, bar_base);
 
@@ -90,6 +96,18 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myClass = new MyClass();
+                refreshTv();
+            }
+        });
+
+    }
+
+    private void refreshTv() {
+        tv.setText("foo => " + bar + " myClass => " + myClass);
     }
 
     private void log(String msg) {

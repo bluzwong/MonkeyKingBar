@@ -34,6 +34,13 @@
                 />
 
     </ScrollView>
+    <Button android:id="@+id/btn"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="init my class"
+            android:layout_marginTop="50dp"
+            />
         <Button android:id="@+id/btn_rx"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

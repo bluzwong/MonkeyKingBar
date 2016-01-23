@@ -252,7 +252,7 @@ public class ClassInjector {
                 builder.append(field.brewSaveState());
             }
 
-            if (isInjectHasUnSerial()) {
+            if (isKeepHasUnSerial()) {
                 builder.append("MKBUtils.putExtra(outState, \"MKB@"+unserUUID+"\", new String[] {");
 
                 boolean init = true;
