@@ -13,7 +13,6 @@ import java.util.Random;
 
 public class MainActivity extends BaseActivity {
 
-//    @UnSerializable
     @InjectExtra
     @KeepState
     int foo;
@@ -31,9 +30,9 @@ public class MainActivity extends BaseActivity {
     @KeepState
     int count = 0;
 
-    @UnSerializable
+    //@UnSerializable
     @InjectExtra
-    //@KeepState
+    @KeepState
     MyClass myClass;
 
     TextView tvMsg;

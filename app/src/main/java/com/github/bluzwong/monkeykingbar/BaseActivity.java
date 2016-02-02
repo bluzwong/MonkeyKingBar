@@ -3,8 +3,7 @@ package com.github.bluzwong.monkeykingbar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import com.github.bluzwong.monkeykingbar_lib.InjectExtra;
-import com.github.bluzwong.monkeykingbar_lib.KeepState;
+import com.github.bluzwong.monkeykingbar_lib.*;
 import com.github.bluzwong.monkeykingbar_lib.MonkeyKingBar;
 
 /**

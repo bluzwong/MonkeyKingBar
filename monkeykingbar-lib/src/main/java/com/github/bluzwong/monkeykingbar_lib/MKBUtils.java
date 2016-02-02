@@ -3,21 +3,34 @@ package com.github.bluzwong.monkeykingbar_lib;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import io.paperdb.Book;
+import io.paperdb.Paper;
 
 import java.io.*;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * Created by wangzhijie on 2016/1/22.
  */
 public class MKBUtils {
+    private static final String OBJECT_PREFIX = "$$MKB_Object$$";
+    private static final String OBJECT_SPLIT_REGEX = "\\$\\$";
 
-    public static final Map<String, Object> maps = new WeakHashMap<>();
+    static Book book;
+
+    static void initBookIfNeed() {
+        if (book != null || MonkeyKingBar.sContext == null) {
+            return;
+        }
+        synchronized (MKBUtils.class) {
+            Paper.init(MonkeyKingBar.sContext);
+            book = Paper.book("MKB_CACHE_BOOK");
+        }
+    }
+
+
     public static Object getExtra(Intent intent, String name) {
+        initBookIfNeed();
         if (intent == null) {
             return null;
         }
@@ -25,10 +38,77 @@ public class MKBUtils {
     }
 
     public static Object getExtra(Bundle bundle, String name) {
+        initBookIfNeed();
         if (bundle == null) {
             return null;
         }
-        return bundle.get(name);
+        Object value = bundle.get(name);
+        return loadObjectOrOrigin(value);
+    }
+
+    static Object loadObjectOrOrigin(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof String) {
+            String maybeKey = (String) value;
+            if (maybeKey.equals("") || !maybeKey.startsWith(OBJECT_PREFIX)) {
+                return value;
+            }
+            String[] keys = maybeKey.split(OBJECT_SPLIT_REGEX);
+            if (keys.length != 3) {
+                return value;
+            }
+            return loadFromBook(maybeKey);
+        }
+        return value;
+    }
+
+    static void saveToBook(String key, Object value) {
+        if (book.exist(key)) {
+            book.delete(key);
+        }
+        book.write(key, value);
+    }
+
+    static Object loadFromBook(String key) {
+        if (!book.exist(key)) {
+            return null;
+        }
+        return book.read(key);
+    }
+
+    static void removeBookKey(String key) {
+        if (!book.exist(key)) {
+            return;
+        }
+        book.delete(key);
+    }
+
+    static void clearAllCache() {
+        if (book.getAllKeys().size() <= 0) {
+            return;
+        }
+        book.destroy();
+    }
+
+    public static Intent putExtra(Intent intent, String name, Object value) {
+        initBookIfNeed();
+        String uuid = UUID.randomUUID().toString();
+        String key = OBJECT_PREFIX + uuid;
+        saveToBook(key, value);
+        putExtra(intent, name, key);
+        return intent;
+    }
+
+
+    public static Bundle putExtra(Bundle bundle, String name, Object value) {
+        initBookIfNeed();
+        String uuid = UUID.randomUUID().toString();
+        String key = OBJECT_PREFIX + uuid;
+        saveToBook(key, value);
+        putExtra(bundle, name, key);
+        return bundle;
     }
 
     /**
@@ -160,6 +240,7 @@ public class MKBUtils {
         return bundle;
     }
 
+
     /** Bundle start */
 
 
@@ -266,6 +347,7 @@ public class MKBUtils {
     public static Intent putExtra(Intent bundle, String name, Bundle value) {
         return bundle.putExtra(name, value);
     }
+
 
     /** Bundle start */
 
