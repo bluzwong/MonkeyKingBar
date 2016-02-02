@@ -1,7 +1,7 @@
 package com.github.bluzwong.monkeykingbar;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import com.github.bluzwong.monkeykingbar_lib.*;
 import com.github.bluzwong.monkeykingbar_lib.MonkeyKingBar;
@@ -9,7 +9,7 @@ import com.github.bluzwong.monkeykingbar_lib.MonkeyKingBar;
 /**
  * Created by Bruce-Home on 2016/1/22.
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends Activity {
 
     @InjectExtra
     @KeepState

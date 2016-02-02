@@ -1,20 +1,24 @@
 package com.github.bluzwong.monkeykingbar_lib;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import io.paperdb.Book;
 import io.paperdb.Paper;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
  * Created by wangzhijie on 2016/1/22.
  */
 public class MKBUtils {
-    private static final String OBJECT_PREFIX = "$$MKB_Object$$";
-    private static final String OBJECT_SPLIT_REGEX = "\\$\\$";
+    static final String OBJECT_PREFIX = "$$MKB_Object$$";
+    static final String OBJECT_SPLIT_REGEX = "\\$\\$";
 
     static Book book;
 
@@ -59,33 +63,73 @@ public class MKBUtils {
             if (keys.length != 3) {
                 return value;
             }
-            return loadFromBook(maybeKey);
+            // $$MKB_Object$$15dca01c-492e-49cb-9c0d-fbf0b8c8fa30
+            if (keys[2].length() != "15dca01c-492e-49cb-9c0d-fbf0b8c8fa30".length()) {
+                return value;
+            }
+            Object loadFromBook = loadFromBook(maybeKey);
+            //removeBookKey(MonkeyKingBar.sContext, maybeKey);
+            return loadFromBook;
         }
         return value;
     }
 
     static void saveToBook(String key, Object value) {
+        if (key == null || value == null) {
+            return;
+        }
+        if (book == null) {
+            throw new IllegalArgumentException("book is null ");
+        }
         if (book.exist(key)) {
             book.delete(key);
+        }
+        try {
+            Constructor<?> constructor = value.getClass().getConstructor();
+            if (constructor == null) {
+                return;
+            }
+            int modifiers = constructor.getModifiers();
+            if (!Modifier.isPublic(modifiers)) {
+                Log.w("MonkeyKingBar", value.getClass() + " constructor is not public , can not save.");
+                return;
+            }
+        } catch (NoSuchMethodException e) {
+            Log.w("MonkeyKingBar", value.getClass() + " missing no-arg constructor, can not save.");
+            e.printStackTrace();
+            return;
+        }
+        int modifiers = value.getClass().getModifiers();
+        if (!Modifier.isPublic(modifiers)) {
+            Log.w("MonkeyKingBar", value.getClass() + " class is not public , can not save.");
+            return;
         }
         book.write(key, value);
     }
 
     static Object loadFromBook(String key) {
+        if (book == null) {
+            throw new IllegalArgumentException("book is null ");
+        }
+
         if (!book.exist(key)) {
             return null;
         }
         return book.read(key);
     }
 
-    static void removeBookKey(String key) {
+    static void removeBookKey(Context context, String key) {
+        MonkeyKingBar.setContext(context);
+        initBookIfNeed();
         if (!book.exist(key)) {
             return;
         }
         book.delete(key);
     }
 
-    static void clearAllCache() {
+    static void clearAllCache(Context context) {
+        MonkeyKingBar.setContext(context);
+        initBookIfNeed();
         if (book.getAllKeys().size() <= 0) {
             return;
         }

@@ -12,11 +12,18 @@ import java.util.List;
  */
 public class MonkeyKingBar {
     static Context sContext;
-    static void setContext(Context context) {
+    public static void setContext(Context context) {
         if (sContext != null || context == null) {
             return;
         }
         sContext = context.getApplicationContext();
+    }
+    public static void init(Context context) {
+        setContext(context);
+    }
+
+    public static void clearAllCache() {
+        MKBUtils.clearAllCache(sContext);
     }
     /**
      * inject any way
