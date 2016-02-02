@@ -1,6 +1,5 @@
 package com.github.bluzwong.monkeykingbar_lib;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 /**

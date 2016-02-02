@@ -29,12 +29,40 @@ public class InjectMyActivityTest {
     public void setUp() throws Exception {
         Context = RuntimeEnvironment.application;
         MonkeyKingBar.init(Context);
-        //MonkeyKingBar.clearAllCache();
+        MonkeyKingBar.clearAllCache();
     }
 
     @After
     public void tearDown() throws Exception {
-        MonkeyKingBar.clearAllCache();
+        //MonkeyKingBar.clearAllCache();
+        MKBUtils.getBook().destroy();
+    }
+
+
+    @Test
+    public void testKeep() {
+        MyClass myClass = new MyClass("content");
+        MyActivity myActivity = new MyActivity();
+        myActivity.foo = 444;
+        myActivity.bar = "barrr";
+        myActivity.myClass = myClass;
+
+        Bundle outState = new Bundle();
+        MonkeyKingBar.keepStateOnSaveInstanceState(myActivity, outState);
+
+        MyActivity myActivity2 = new MyActivity();
+        MonkeyKingBar.keepStateOnCreate(myActivity2, outState);
+
+        assertEquals(myActivity2.foo, 444);
+        assertEquals(myActivity2.bar, "barrr");
+        assertEquals(myActivity2.myClass, myClass);
+/*
+        MonkeyKingBar.onDestroy(myActivity2);
+        myActivity2 = new MyActivity();
+        MonkeyKingBar.keepStateOnCreate(myActivity2, outState);
+        assertEquals(myActivity2.foo, 444);
+        assertEquals(myActivity2.bar, "barrr");
+        assertEquals(myActivity2.myClass, null);*/
     }
 
     @Test
@@ -43,8 +71,7 @@ public class InjectMyActivityTest {
         Intent intent = MyActivity_MKB.putExtra(new Intent(), 333, "bar11", myClass);
         //controller.create(intent.getExtras());
         MyActivity myActivity = new MyActivity();
-        myActivity.setIntent(intent);
-        MonkeyKingBar.injectExtras(myActivity);
+        MonkeyKingBar.injectExtras(myActivity, intent);
 
         assertEquals(myActivity.foo, 333);
         assertEquals(myActivity.bar, "bar11");
@@ -57,5 +84,6 @@ public class InjectMyActivityTest {
         assertEquals(myActivity.bar, "bar11");
         assertEquals(myActivity.myClass, null);*/
     }
+
 
 }

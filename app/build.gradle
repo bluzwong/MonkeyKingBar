@@ -36,6 +36,6 @@ dependencies {
 
     compile project (':monkeykingbar-lib')
     apt project (':monkeykingbar-processor')
-//    apt 'com.github.bluzwong:monkeykingbar-processor:0.0.3'
-//    compile ('com.github.bluzwong:monkeykingbar-lib:0.0.3@aar')// { transitive = true }
+//    apt 'com.github.bluzwong:monkeykingbar-processor:0.1.0'
+//    compile ('com.github.bluzwong:monkeykingbar-lib:0.1.0@aar')// { transitive = true }
 }

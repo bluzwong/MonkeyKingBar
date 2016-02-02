@@ -1,9 +1,10 @@
 package com.github.bluzwong.monkeykingbar_lib;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import io.paperdb.Paper;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public class MonkeyKingBar {
     static Context sContext;
-    public static void setContext(Context context) {
+    private static void setContext(Context context) {
         if (sContext != null || context == null) {
             return;
         }
@@ -20,10 +21,12 @@ public class MonkeyKingBar {
     }
     public static void init(Context context) {
         setContext(context);
+        Paper.init(sContext);
+        MKBUtils.book = Paper.book("MKB_CACHE_BOOK");
     }
 
     public static void clearAllCache() {
-        MKBUtils.clearAllCache(sContext);
+        MKBUtils.clearAllCache();
     }
 
    /* public static void onDestroy(Activity activity) {
@@ -44,120 +47,107 @@ public class MonkeyKingBar {
 
     /**
      * inject any way
-     * @param activity
      */
-    public static void injectExtras(Activity activity) {
-        setContext(activity);
-        List<Inject> injects = InjectFactory.create(activity);
+    public static void injectExtras(Object target, Intent intent) {
+        if (target == null || intent == null) {
+            //throw new IllegalArgumentException("target is null ");
+            return;
+        }
+        List<Inject> injects = InjectFactory.create(target);
         if (injects == null || injects.size() <= 0) {
             logw("@InjectExtra not found, can not create injector !");
             return;
         }
         for (Inject inject : injects) {
-            inject.injectExtras(activity);
+            inject.injectExtras(target, intent);
         }
     }
 
-    public static void injectExtrasAsync(final Activity activity, final ExtraInjectedListener listener) {
-        setContext(activity);
+    public static void injectExtrasAsync(final Object target, final Intent intent, final ExtraInjectedListener listener) {
+        if (target == null || intent == null) {
+            return;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
-                injectExtras(activity);
-                if (activity == null) {
-                    return;
+                injectExtras(target, intent);
+                if (listener != null) {
+                    listener.OnExtraInjected();
                 }
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.OnExtraInjected();
-                    }
-                });
             }
         }).start();
     }
 
     /**
      * inject when savedInstanceState is null
-     * @param activity
      * @param savedInstanceState
      */
-    public static void injectExtras(Activity activity,  Bundle savedInstanceState) {
-        setContext(activity);
-        if (savedInstanceState != null) {
+    public static void injectExtras(Object target, Intent intent,  Bundle savedInstanceState) {
+        if (savedInstanceState != null || target == null || intent == null) {
             // got savedInstanceState do not need to inject
             return;
         }
-        injectExtras(activity);
+        injectExtras(target, intent);
     }
 
-    public static void injectExtrasAsync(Activity activity,  Bundle savedInstanceState, final ExtraInjectedListener listener) {
-        setContext(activity);
-        if (savedInstanceState != null) {
+    public static void injectExtrasAsync(Object target,  Intent intent,Bundle savedInstanceState, final ExtraInjectedListener listener) {
+        if (savedInstanceState != null || target == null || intent == null) {
             // got savedInstanceState do not need to inject
             return;
         }
-        injectExtrasAsync(activity, listener);
+        injectExtrasAsync(target, intent, listener);
     }
     /**
      * restore state when savedInstanceState is not null
-     * @param activity
      * @param savedInstanceState
      */
-    public static void keepStateOnCreate(Activity activity, Bundle savedInstanceState) {
-        setContext(activity);
-        if (savedInstanceState == null) {
+    public static void keepStateOnCreate(Object target, Bundle savedInstanceState) {
+        if (savedInstanceState == null || target == null) {
             // no state to keep
             return;
         }
-        List<Keep> keeps = KeepFactory.create(activity);
+        List<Keep> keeps = KeepFactory.create(target);
         if (keeps == null || keeps.size() <= 0) {
             logw("@KeepState not found, can not create injector !");
             return;
         }
         for (Keep keep : keeps) {
-            keep.onCreate(activity, savedInstanceState);
+            keep.onCreate(target, savedInstanceState);
         }
     }
 
-    public static void keepStateOnCrateAsync(final Activity activity, final Bundle savedInstanceState, final StateRestoredListener listener) {
-        setContext(activity);
+    public static void keepStateOnCrateAsync(final Object target, final Bundle savedInstanceState, final StateRestoredListener listener) {
+        if (target == null || savedInstanceState == null) {
+            return;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
-                keepStateOnCreate(activity, savedInstanceState);
-                if (activity == null) {
-                    return;
+                keepStateOnCreate(target, savedInstanceState);
+                if (listener!= null) {
+                    listener.OnStateRestoredInjected();
                 }
 
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.OnStateRestoredInjected();
-                    }
-                });
             }
         }).start();
     }
 
     /**
      * save state
-     * @param activity
      * @param outState
      */
-    public static void keepStateOnSaveInstanceState(Activity activity, Bundle outState) {
-        setContext(activity);
-        if (outState == null) {
+    public static void keepStateOnSaveInstanceState(Object target, Bundle outState) {
+        if (outState == null || target == null) {
             // no outstate kannot save state
             return;
         }
-        List<Keep> keeps = KeepFactory.create(activity);
+        List<Keep> keeps = KeepFactory.create(target);
         if (keeps == null || keeps.size() <= 0) {
             logw("@KeepState not found, can not create injector !");
             return;
         }
         for (Keep keep : keeps) {
-            keep.onSaveInstanceState(activity, outState);
+            keep.onSaveInstanceState(target, outState);
         }
     }
 

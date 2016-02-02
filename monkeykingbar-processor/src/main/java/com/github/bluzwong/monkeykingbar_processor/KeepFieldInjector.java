@@ -1,8 +1,6 @@
 package com.github.bluzwong.monkeykingbar_processor;
 
 
-import java.util.UUID;
-
 /**
  * Created by wangzhijie@wind-mobi.com on 2015/9/24.
  */
@@ -12,7 +10,6 @@ public class KeepFieldInjector {
     private String fieldName, fieldType;
 
     public static final String PREFIX = "MKB_";
-    private String key = "";
     private boolean unSerializable = false;
     public boolean isUnSerializable() {
         return unSerializable;
@@ -21,8 +18,11 @@ public class KeepFieldInjector {
     public KeepFieldInjector(String fieldName, String fieldType, boolean unSerializable) {
         this.fieldName = fieldName;
         this.fieldType = fieldType;
-        this.key = PREFIX + fieldName + "@" + UUID.randomUUID();
         this.unSerializable = unSerializable;
+    }
+    private String className;
+    public void setClassName(String fieldKey) {
+        this.className = Utils.getMD5(fieldKey + "." + fieldName+": " + fieldType) + "@";
     }
 
     public String getFieldName() {
@@ -44,7 +44,7 @@ public class KeepFieldInjector {
             builder.append("}\n}\n");
 
         } else {
-            builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \"" + key + "\");\n");
+            builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \"" + className + "\" +uuid);\n");
             builder.append(" if (obj != null) { ");
             builder.append("    target." + fieldName + " = (" + fieldType + ") obj;\n");
             builder.append(" }");
@@ -61,13 +61,14 @@ public class KeepFieldInjector {
             builder.append("String " + key + " = UUID.randomUUID().toString();\n");
             builder.append("MKBUtils.maps.put(" + key +", target." + fieldName + ");\n");
         } else {
-            builder.append("MKBUtils.putExtra(outState,").append("\"" + key + "\", target. " + fieldName).append(");\n");
+            builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
+            builder.append("MKBUtils.putExtra(outState,").append("\"" + className + "\"+uuid, target. " + fieldName).append(");\n");
         }
         return builder.toString();
     }
 
     public String brewDestroy() {
-        return "MKBUtils.removeCache(\"" + key +"\");\n";
+        return "MKBUtils.removeCache(\"" + className +");\n";
     }
 
     public static void main(String[] args) {

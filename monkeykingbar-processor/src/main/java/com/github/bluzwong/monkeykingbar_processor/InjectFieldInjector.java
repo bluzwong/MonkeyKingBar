@@ -1,8 +1,6 @@
 package com.github.bluzwong.monkeykingbar_processor;
 
 
-import java.util.UUID;
-
 /**
  * Created by wangzhijie@wind-mobi.com on 2015/9/24.
  */
@@ -11,7 +9,7 @@ public class InjectFieldInjector {
 
     private String fieldName, fieldType;
     public static final String PREFIX = "MKB_";
-    private String key = "";
+    private String className = "";
 
     private boolean unSerializable = false;
     public boolean isUnSerializable() {
@@ -20,11 +18,12 @@ public class InjectFieldInjector {
     public InjectFieldInjector(String fieldName, String fieldType, boolean unSerializable) {
         this.fieldName = fieldName;
         this.fieldType = fieldType;
-        this.key = PREFIX + fieldName + "@" + UUID.randomUUID();
         this.unSerializable = unSerializable;
     }
 
-
+    public void setClassName(String fieldKey) {
+        this.className = Utils.getMD5(fieldKey + "." + fieldName+": " + fieldType) + "@";
+    }
 
     public String getFieldName() {
         return fieldName;
@@ -48,7 +47,7 @@ public class InjectFieldInjector {
 
         } else {
 
-            builder.append(" obj = MKBUtils.getExtra(intent, \"" + key + "\");\n");
+            builder.append(" obj = MKBUtils.getExtra(intent, \"" + className + "\" +uuid);\n");
 
             builder.append(" if (obj != null) { ");
             builder.append("    target." + fieldName + " = (" + fieldType + ") obj;\n");
@@ -67,13 +66,14 @@ public class InjectFieldInjector {
             builder.append("String " + key + " = UUID.randomUUID().toString();\n");
             builder.append("MKBUtils.maps.put(" + key +", " + fieldName + ");");
         } else {
-            builder.append("MKBUtils.putExtra(intent,\"" + key + "\", " + fieldName + ");\n");
+            builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
+            builder.append("MKBUtils.putExtra(intent,\"" + className + "\"+uuid, " + fieldName + ");\n");
         }
 
         return builder.toString();
     }
     public String brewDestroy() {
-        return "MKBUtils.removeCache(\"" + key +"\");\n";
+        return "MKBUtils.removeCache(\"" + className +");\n";
     }
     public static void main(String[] args) {
         //System.out.println(new InjectFieldInjector("ccf", "String").brewInjectExtrasJava());

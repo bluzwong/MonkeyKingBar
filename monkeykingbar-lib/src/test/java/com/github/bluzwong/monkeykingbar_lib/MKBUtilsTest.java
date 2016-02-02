@@ -4,7 +4,6 @@ package com.github.bluzwong.monkeykingbar_lib;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import io.paperdb.Book;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,20 +28,10 @@ public class MKBUtilsTest {
     @Before
     public void setUp() throws Exception {
         context = RuntimeEnvironment.application;
-        MonkeyKingBar.setContext(context);
-        initBookIfNeed();
+        MonkeyKingBar.init(context);
         book.destroy();
     }
 
-    @Test
-    public void testInitBookIfNeed() throws Exception {
-        book = null;
-        initBookIfNeed();
-        Book testBook = book;
-        assertNotNull(testBook);
-        initBookIfNeed();
-        assertTrue(testBook == book);
-    }
 
     @Test
     public void testGetExtra() throws Exception {
@@ -144,11 +133,11 @@ public class MKBUtilsTest {
 
         assertTrue(book.exist("wsd"));
         assertTrue(book.exist("ccf"));
-        removeBookKey(context, "wsd");
+        removeBookKey("wsd");
         assertFalse(book.exist("wsd"));
         assertTrue(book.exist("ccf"));
 
-        removeBookKey(context, "ccf");
+        removeBookKey( "ccf");
         assertFalse(book.exist("wsd"));
         assertFalse(book.exist("ccf"));
     }
@@ -159,11 +148,29 @@ public class MKBUtilsTest {
         testLoadFromBook();
         assertTrue(book.exist("wsd"));
         assertTrue(book.exist("ccf"));
-        clearAllCache(context);
+        clearAllCache();
         assertFalse(book.exist("wsd"));
         assertFalse(book.exist("ccf"));
         int size = book.getAllKeys().size();
         assertEquals(size, 0);
+    }
+
+    @Test
+    public void testRemoveKeyNotUuid() {
+        MyClass ccfValue = new MyClass("ccf-");
+        MyClass ccfValue2 = new MyClass("ccf-2");
+        Bundle bundle = new Bundle();
+
+        String uuid = UUID.randomUUID().toString();
+        String uuid2 = UUID.randomUUID().toString();
+        String key = "f32f24f430359ddb5022b16497ea2f79@";
+        putExtra(bundle, key + uuid, ccfValue);
+        putExtra(bundle, key + uuid2, ccfValue2);
+        removeKeyIfNotUuid(key, uuid);
+        Object ccf1 = getExtra(bundle, key + uuid);
+        Object ccf2 = getExtra(bundle, key + uuid2);
+        assertNotNull(ccf1);
+        assertNull(ccf2);
     }
 
 

@@ -19,11 +19,9 @@ android {
 }
 
 dependencies {
-    compile 'io.reactivex:rxjava:1.0.14'
-    compile 'com.squareup.okhttp3:okhttp:3.0.0-RC1'
     compile 'io.paperdb:paperdb:1.1'
     testCompile 'junit:junit:4.12'
     testCompile ('org.robolectric:robolectric:3.0-rc3')// {exclude module: 'asm'}
 }
 
-apply from: 'push.gradle'
+//apply from: 'push.gradle'

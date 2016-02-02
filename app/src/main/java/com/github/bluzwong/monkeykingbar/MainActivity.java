@@ -40,7 +40,8 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.content_main);
         initView();
 
-        MonkeyKingBar.injectExtras(this, savedInstanceState);
+        MonkeyKingBar.init(this);
+        MonkeyKingBar.injectExtras(this, getIntent(), savedInstanceState);
         log("注入字段完成");
         MonkeyKingBar.keepStateOnCreate(this, savedInstanceState);
         log("恢复字段完成");

@@ -42,6 +42,12 @@ public class ClassInjector {
 
 
     public String brewJava() {
+        for (InjectFieldInjector field : injectFields) {
+            field.setClassName(classPackage + "." + originClassName);
+        }
+        for (KeepFieldInjector field : keepFields) {
+            field.setClassName(classPackage + "." + originClassName);
+        }
         needInject = injectFields.size() > 0;
         needKeep = keepFields.size() > 0;
 
@@ -80,17 +86,19 @@ public class ClassInjector {
         // static fields
 
 
+        builder.append("private static final String uuid = UUID.randomUUID().toString();\n");
+
         // injectFields
         if (needInject) {
             int index = 0;
             builder.append("@Override                                                                                   \n");
-            builder.append("    public void injectExtras(Activity activity) {                                   \n");
-            builder.append("        if (activity == null) {\n");
-            builder.append("            throw new IllegalStateException();                              \n");
+            builder.append("    public void injectExtras(Object tar, Intent intent) {                                   \n");
+            builder.append("        if (tar == null || intent == null) {\n");
+            builder.append("            return; //throw new IllegalStateException();                              \n");
             builder.append("        }                                                               \n");
-            builder.append(originClassName).append(" target = ( ").append(originClassName).append(" ) activity;\n");
+            builder.append(originClassName).append(" target = ( ").append(originClassName).append(" ) tar;\n");
             builder.append("Object obj = null;\n");
-            builder.append("Intent intent = activity.getIntent();\n");
+            //builder.append("Intent intent = activity.getIntent();\n");
 
             if (isInjectHasUnSerial()) {
                 builder.append("obj = MKBUtils.getExtra(intent, \"MKB@" + unserUUID +"\");\n");

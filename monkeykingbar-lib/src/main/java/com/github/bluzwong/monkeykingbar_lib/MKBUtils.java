@@ -17,7 +17,7 @@ import java.util.*;
  * Created by wangzhijie on 2016/1/22.
  */
 public class MKBUtils {
-    static final String OBJECT_PREFIX = "$$MKB_Object$$";
+    static final String OBJECT_PREFIX = "$$MKB$$";
     static final String OBJECT_SPLIT_REGEX = "\\$\\$";
 
     static Book book;
@@ -26,19 +26,8 @@ public class MKBUtils {
         return book;
     }
 
-    static void initBookIfNeed() {
-        if (book != null || MonkeyKingBar.sContext == null) {
-            return;
-        }
-        synchronized (MKBUtils.class) {
-            Paper.init(MonkeyKingBar.sContext);
-            book = Paper.book("MKB_CACHE_BOOK");
-        }
-    }
-
 
     public static Object getExtra(Intent intent, String name) {
-        initBookIfNeed();
         if (intent == null) {
             return null;
         }
@@ -46,7 +35,6 @@ public class MKBUtils {
     }
 
     public static Object getExtra(Bundle bundle, String name) {
-        initBookIfNeed();
         if (bundle == null) {
             return null;
         }
@@ -72,7 +60,7 @@ public class MKBUtils {
                 return value;
             }
             Object loadFromBook = loadFromBook(maybeKey);
-            removeBookKey(MonkeyKingBar.sContext, maybeKey);
+            removeBookKey(maybeKey);
             return loadFromBook;
         }
         return value;
@@ -85,9 +73,9 @@ public class MKBUtils {
         if (book == null) {
             throw new IllegalArgumentException("book is null ");
         }
-        if (book.exist(key)) {
+        /*if (book.exist(key)) {
             book.delete(key);
-        }
+        }*/
         try {
             Constructor<?> constructor = value.getClass().getConstructor();
             if (constructor == null) {
@@ -122,13 +110,19 @@ public class MKBUtils {
         return book.read(key);
     }
 
-    static void removeBookKey(Context context, String key) {
-        MonkeyKingBar.setContext(context);
-        initBookIfNeed();
+    static void removeBookKey(String key) {
         if (!book.exist(key)) {
             return;
         }
         book.delete(key);
+    }
+
+    public static void removeKeyIfNotUuid(String keyName, String uuid) {
+        for (String key : book.getAllKeys()) {
+            if (key.contains(keyName) && !key.contains(uuid)) {
+                book.delete(key);
+            }
+        }
     }
 
     public static void removeCache(String key) {
@@ -141,22 +135,21 @@ public class MKBUtils {
         }
         for (String thisKey : allKeys) {
             if (thisKey.endsWith(key)) {
-                removeBookKey(MonkeyKingBar.sContext, thisKey);
+                removeBookKey(thisKey);
             }
         }
     }
 
-    static void clearAllCache(Context context) {
-        MonkeyKingBar.setContext(context);
-        initBookIfNeed();
+    static synchronized void clearAllCache() {
         if (book.getAllKeys().size() <= 0) {
             return;
         }
-        book.destroy();
+        for (String key : book.getAllKeys()) {
+            book.delete(key);
+        }
     }
 
     public static Intent putExtra(Intent intent, String name, Object value) {
-        initBookIfNeed();
         String uuid = UUID.randomUUID().toString();
         String key = OBJECT_PREFIX + uuid + "$$" + name;
         saveToBook(key, value);
@@ -166,7 +159,6 @@ public class MKBUtils {
 
 
     public static Bundle putExtra(Bundle bundle, String name, Object value) {
-        initBookIfNeed();
         String uuid = UUID.randomUUID().toString();
         String key = OBJECT_PREFIX + uuid + "$$" + name;
         saveToBook(key, value);
