@@ -1,1 +1,1 @@
-include  ':app' , ':monkeykingbar-processor', ':monkeykingbar-lib'
+include ':monkeykingbar-lib'// ':app' , ':monkeykingbar-processor', ':monkeykingbar-lib'
