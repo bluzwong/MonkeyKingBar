@@ -72,7 +72,9 @@ public class InjectFieldInjector {
 
         return builder.toString();
     }
-
+    public String brewDestroy() {
+        return "MKBUtils.removeCache(\"" + key +"\");\n";
+    }
     public static void main(String[] args) {
         //System.out.println(new InjectFieldInjector("ccf", "String").brewInjectExtrasJava());
     }

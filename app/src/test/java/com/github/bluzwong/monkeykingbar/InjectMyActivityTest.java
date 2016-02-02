@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import com.github.bluzwong.monkeykingbar_lib.MKBUtils;
 import com.github.bluzwong.monkeykingbar_lib.MonkeyKingBar;
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +21,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = com.github.bluzwong.monkeykingbar_lib.BuildConfig.class)
-public class MyActivityTest {
+public class InjectMyActivityTest {
 
     Context Context;
 
@@ -33,7 +34,7 @@ public class MyActivityTest {
 
     @After
     public void tearDown() throws Exception {
-        //MonkeyKingBar.clearAllCache();
+        MonkeyKingBar.clearAllCache();
     }
 
     @Test
@@ -48,23 +49,13 @@ public class MyActivityTest {
         assertEquals(myActivity.foo, 333);
         assertEquals(myActivity.bar, "bar11");
         assertEquals(myActivity.myClass, myClass);
+        /*MonkeyKingBar.onDestroy(myActivity);
+        myActivity = new MyActivity();
+        myActivity.setIntent(intent);
+        MonkeyKingBar.injectExtras(myActivity);
+        assertEquals(myActivity.foo, 333);
+        assertEquals(myActivity.bar, "bar11");
+        assertEquals(myActivity.myClass, null);*/
     }
 
-    @Test
-    public void testKeep() {
-        MyClass myClass = new MyClass("content");
-        MyActivity myActivity = new MyActivity();
-        myActivity.foo = 444;
-        myActivity.bar = "barrr";
-        myActivity.myClass = myClass;
-
-        Bundle outState = new Bundle();
-        MonkeyKingBar.keepStateOnSaveInstanceState(myActivity, outState);
-        MyActivity myActivity2 = new MyActivity();
-        MonkeyKingBar.keepStateOnCreate(myActivity2, outState);
-
-        assertEquals(myActivity.foo, 444);
-        assertEquals(myActivity.bar, "barrr");
-        assertEquals(myActivity.myClass, myClass);
-    }
 }

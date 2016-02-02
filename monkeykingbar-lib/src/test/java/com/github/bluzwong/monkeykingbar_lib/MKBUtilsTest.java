@@ -90,7 +90,7 @@ public class MKBUtilsTest {
 
     @Test
     public void testLoadObjectOrOrigin() throws Exception {
-        String value = OBJECT_PREFIX + UUID.randomUUID();
+        String value = OBJECT_PREFIX + UUID.randomUUID() + "$$wsdObject";
         saveToBook(value, "wsdObject");
 
         Object ccf = loadObjectOrOrigin("ccf");
@@ -104,6 +104,9 @@ public class MKBUtilsTest {
 
         Object wsd = loadObjectOrOrigin(value);
         assertEquals(wsd, "wsdObject");
+
+        assertFalse(getBook().exist(value));
+        assertNull(loadObjectOrOrigin(value));
     }
 
     @Test

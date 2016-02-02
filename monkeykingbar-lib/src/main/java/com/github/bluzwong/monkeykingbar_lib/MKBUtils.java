@@ -22,6 +22,10 @@ public class MKBUtils {
 
     static Book book;
 
+    public static Book getBook() {
+        return book;
+    }
+
     static void initBookIfNeed() {
         if (book != null || MonkeyKingBar.sContext == null) {
             return;
@@ -60,7 +64,7 @@ public class MKBUtils {
                 return value;
             }
             String[] keys = maybeKey.split(OBJECT_SPLIT_REGEX);
-            if (keys.length != 3) {
+            if (keys.length != 4) {
                 return value;
             }
             // $$MKB_Object$$15dca01c-492e-49cb-9c0d-fbf0b8c8fa30
@@ -68,7 +72,7 @@ public class MKBUtils {
                 return value;
             }
             Object loadFromBook = loadFromBook(maybeKey);
-            //removeBookKey(MonkeyKingBar.sContext, maybeKey);
+            removeBookKey(MonkeyKingBar.sContext, maybeKey);
             return loadFromBook;
         }
         return value;
@@ -127,6 +131,21 @@ public class MKBUtils {
         book.delete(key);
     }
 
+    public static void removeCache(String key) {
+        if (book == null) {
+            throw new IllegalArgumentException("book is null ");
+        }
+        List<String> allKeys = book.getAllKeys();
+        if (allKeys == null || allKeys.size() == 0) {
+            return;
+        }
+        for (String thisKey : allKeys) {
+            if (thisKey.endsWith(key)) {
+                removeBookKey(MonkeyKingBar.sContext, thisKey);
+            }
+        }
+    }
+
     static void clearAllCache(Context context) {
         MonkeyKingBar.setContext(context);
         initBookIfNeed();
@@ -139,7 +158,7 @@ public class MKBUtils {
     public static Intent putExtra(Intent intent, String name, Object value) {
         initBookIfNeed();
         String uuid = UUID.randomUUID().toString();
-        String key = OBJECT_PREFIX + uuid;
+        String key = OBJECT_PREFIX + uuid + "$$" + name;
         saveToBook(key, value);
         putExtra(intent, name, key);
         return intent;
@@ -149,7 +168,7 @@ public class MKBUtils {
     public static Bundle putExtra(Bundle bundle, String name, Object value) {
         initBookIfNeed();
         String uuid = UUID.randomUUID().toString();
-        String key = OBJECT_PREFIX + uuid;
+        String key = OBJECT_PREFIX + uuid + "$$" + name;
         saveToBook(key, value);
         putExtra(bundle, name, key);
         return bundle;

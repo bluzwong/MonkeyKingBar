@@ -272,6 +272,20 @@ public class ClassInjector {
             builder.append("} \n");
         }
 
+        // destroy method start
+        /*
+        builder.append("@Override\n")
+                .append("public void onDestroy() {\n");
+
+        for (InjectFieldInjector injectField : injectFields) {
+            builder.append(injectField.brewDestroy());
+        }
+
+        for (KeepFieldInjector keepField : keepFields) {
+            builder.append(keepField.brewDestroy());
+        }
+        builder.append("}\n");*/
+        // destroy method end
         // end of class
         builder.append("}\n"); // end of class
         return builder.toString();

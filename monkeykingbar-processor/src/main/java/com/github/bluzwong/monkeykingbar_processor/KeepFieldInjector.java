@@ -66,6 +66,10 @@ public class KeepFieldInjector {
         return builder.toString();
     }
 
+    public String brewDestroy() {
+        return "MKBUtils.removeCache(\"" + key +"\");\n";
+    }
+
     public static void main(String[] args) {
         //System.out.println(new KeepFieldInjector("datas", "ArrayList<String>").brewOnCreateJava());
         //System.out.println(new KeepFieldInjector("datas", "ArrayList<String>").brewSaveState());

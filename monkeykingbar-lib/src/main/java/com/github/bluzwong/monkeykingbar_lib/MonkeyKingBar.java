@@ -25,6 +25,23 @@ public class MonkeyKingBar {
     public static void clearAllCache() {
         MKBUtils.clearAllCache(sContext);
     }
+
+   /* public static void onDestroy(Activity activity) {
+        List<Inject> injects = InjectFactory.create(activity);
+        if (injects != null && injects.size() > 0) {
+            for (Inject inject : injects) {
+                inject.onDestroy();
+            }
+            return;
+        }
+        List<Keep> keeps = KeepFactory.create(activity);
+        if (keeps != null && keeps.size() > 0) {
+            for (Keep keep : keeps) {
+                keep.onDestroy();
+            }
+        }
+    }*/
+
     /**
      * inject any way
      * @param activity

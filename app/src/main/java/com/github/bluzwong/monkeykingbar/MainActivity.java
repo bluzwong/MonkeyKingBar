@@ -16,12 +16,10 @@ public class MainActivity extends BaseActivity {
     @KeepState
     int foo;
 
-//    @UnSerializable
     @InjectExtra
     @KeepState
     String bar;
 
-//    @UnSerializable
     @KeepState
     String msgs = "";
 
@@ -29,7 +27,6 @@ public class MainActivity extends BaseActivity {
     @KeepState
     int count = 0;
 
-    //@UnSerializable
     @InjectExtra
     @KeepState
     MyClass myClass;
