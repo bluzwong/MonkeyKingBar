@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt' //apt
+apply plugin: 'kotlin-android'
+//apply plugin: 'com.neenbedankt.android-apt' //apt
 android {
     compileSdkVersion 22
     buildToolsVersion "23.0.1"
@@ -17,14 +18,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    packagingOptions {
-        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
     }
+
 }
 repositories {
     maven {
         url = 'https://dl.bintray.com/bluzwong/maven'
     }
+    mavenCentral()
 }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -34,8 +37,27 @@ dependencies {
     //compile 'com.android.support:design:22.2.1'
     testCompile 'com.android.support:support-annotations:22.1.1'
 
-    compile project (':monkeykingbar-lib')
-    apt project (':monkeykingbar-processor')
-//    apt 'com.github.bluzwong:monkeykingbar-processor:0.1.0'
-//    compile ('com.github.bluzwong:monkeykingbar-lib:0.1.0@aar')// { transitive = true }
+//    compile project (':monkeykingbar-lib')
+//    kapt project (':monkeykingbar-processor')
+
+    kapt 'com.github.bluzwong:monkeykingbar-processor:0.1.2'
+    compile ('com.github.bluzwong:monkeykingbar-lib:0.1.1')// { transitive = true }
+
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+buildscript {
+    ext.kotlin_version = '1.0.0-rc-1036'
+    repositories {
+        jcenter {
+            url 'http://jcenter.bintray.com'
+        }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+kapt {
+    generateStubs = true
 }

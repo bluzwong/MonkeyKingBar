@@ -2,6 +2,9 @@ package com.github.bluzwong.monkeykingbar_processor;
 
 
 
+import com.github.bluzwong.monkeykingbar_lib.InjectExtra;
+import com.google.auto.service.AutoService;
+
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
@@ -11,16 +14,12 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.Writer;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by wangzhijie@wind-mobi.com on 2015/9/24.
  */
-@SupportedAnnotationTypes({"com.github.bluzwong.monkeykingbar_lib.InjectExtra", "com.github.bluzwong.monkeykingbar_lib.KeepState"})
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@AutoService(Processor.class)
 public class AnnotationProcessor extends AbstractProcessor{
 
 
@@ -35,6 +34,17 @@ public class AnnotationProcessor extends AbstractProcessor{
         filer = env.getFiler();
         elementUtils = env.getElementUtils();
         typeUtils = env.getTypeUtils();
+    }
+
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        Set<String> types = new LinkedHashSet<>();
+        types.add("com.github.bluzwong.monkeykingbar_lib.InjectExtra");
+        types.add("com.github.bluzwong.monkeykingbar_lib.KeepState");
+        return types;
+    }
+    @Override public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
     }
     /**
      * {@inheritDoc}
@@ -67,7 +77,11 @@ public class AnnotationProcessor extends AbstractProcessor{
 
     private Map<TypeElement, ClassInjector> findAndParseTargets(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv){
         Map<TypeElement, ClassInjector> targetClassMap = new LinkedHashMap<TypeElement, ClassInjector>();
-
+        Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(InjectExtra.class);
+        /*log("InjectExtra.class@@@@@@@@@@@@@@@@");
+        for (Element element : elements) {
+            log("element => " + element);
+        }*/
         for (TypeElement te : annotations) {
             // te = zhujie
             String annoName = te.getSimpleName().toString();
@@ -83,7 +97,17 @@ public class AnnotationProcessor extends AbstractProcessor{
                 log("fieldType -> " + fieldType); //   fieldType -> int
 
                 ClassInjector injector = getOrCreateTargetClass(targetClassMap, className);
-
+                List<String> fields = new ArrayList<String>();
+                for (Element element : className.getEnclosedElements()) {
+                    if (element instanceof VariableElement) {
+                        fields.add(element.getSimpleName().toString());
+                    }
+                }
+                // todo remove it
+                for (String field : fields) {
+                    log(className + " -@-@-> " + field);
+                }
+                injector.setFields(fields);
                 List<? extends AnnotationMirror> annotationMirrors = e.getAnnotationMirrors();
                 boolean isUnserializable = false;
                 for (AnnotationMirror annotationMirror : annotationMirrors) {

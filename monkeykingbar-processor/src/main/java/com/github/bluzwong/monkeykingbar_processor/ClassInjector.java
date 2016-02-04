@@ -10,12 +10,13 @@ public class ClassInjector {
     private final String classPackage;
     private final String className;
     private final String originClassName;
-    private final Set<InjectFieldInjector> injectFields;
-    private final Set<KeepFieldInjector> keepFields;
+    private final List<InjectFieldInjector> injectFields;
+    private final List<KeepFieldInjector> keepFields;
     private boolean needInject = false, needKeep = false;
     private static final String SUFFIX = "_MKB";
     private String unserUUID = UUID.randomUUID().toString();
 
+    private List<String> fields;
     public ClassInjector(String classPackage, String className) {
         // com.github.bluzwong.mycache
         this.classPackage = classPackage;
@@ -24,8 +25,12 @@ public class ClassInjector {
         // MainActivity_MKB
         this.className = className + SUFFIX;
 
-        this.injectFields = new LinkedHashSet<InjectFieldInjector>();
-        this.keepFields = new LinkedHashSet<KeepFieldInjector>();
+        this.injectFields = new ArrayList<InjectFieldInjector>();
+        this.keepFields = new ArrayList<KeepFieldInjector>();
+    }
+
+    public void setFields(List<String> fields) {
+        this.fields = fields;
     }
 
     public void addInjectField(InjectFieldInjector e) {
@@ -48,6 +53,29 @@ public class ClassInjector {
         for (KeepFieldInjector field : keepFields) {
             field.setClassName(classPackage + "." + originClassName);
         }
+        ArrayList<InjectFieldInjector> tmpInjects = new ArrayList<InjectFieldInjector>();
+        for (String field : fields) {
+            for (InjectFieldInjector inject : injectFields) {
+                if (inject.getFieldName().equals(field)) {
+                    tmpInjects.add(inject);
+                }
+            }
+        }
+        injectFields.clear();
+        injectFields.addAll(tmpInjects);
+
+
+        ArrayList<KeepFieldInjector> tmpKeepInjects = new ArrayList<KeepFieldInjector>();
+        for (String field : fields) {
+            for (KeepFieldInjector inject : keepFields) {
+                if (inject.getFieldName().equals(field)) {
+                    tmpKeepInjects.add(inject);
+                }
+            }
+        }
+        keepFields.clear();
+        keepFields.addAll(tmpKeepInjects);
+
         needInject = injectFields.size() > 0;
         needKeep = keepFields.size() > 0;
 
