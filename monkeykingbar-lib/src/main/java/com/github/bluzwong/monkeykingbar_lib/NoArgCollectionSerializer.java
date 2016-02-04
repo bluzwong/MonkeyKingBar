@@ -10,7 +10,6 @@ import java.util.Collection;
 /**
  * Serializes collections without no-arg constructors by creating ArrayList instances to wrap
  * their data.
- * <p/>
  * For example collections created by calling List.sublist() don't have no-arg constructors.
  */
 public class NoArgCollectionSerializer extends CollectionSerializer {
