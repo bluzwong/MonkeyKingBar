@@ -11,9 +11,7 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import java.util.UUID;
 
-import static com.github.bluzwong.monkeykingbar_lib.MKBUtils.book;
 import static org.junit.Assert.*;
 import static com.github.bluzwong.monkeykingbar_lib.MKBUtils.*;
 /**
@@ -29,7 +27,6 @@ public class MKBUtilsTest {
     public void setUp() throws Exception {
         context = RuntimeEnvironment.application;
         MonkeyKingBar.init(context);
-        book.destroy();
     }
 
 
@@ -49,7 +46,7 @@ public class MKBUtilsTest {
         assertEquals(ccfGet, ccfValue);
 
         putExtra(intent, "notpublicclass", new NotPublicClass());
-        assertNull(getExtra(intent, "notpublicclass"));
+        assertNotNull(getExtra(intent, "notpublicclass"));
 
         putExtra(intent, "notpublic const", new NotPublicConstructor());
         assertNull(getExtra(intent, "notpublic const"));
@@ -71,106 +68,10 @@ public class MKBUtilsTest {
         assertEquals(ccfGet, ccfValue);
 
         putExtra(bundle, "notpublicclass", new NotPublicClass());
-        assertNull(getExtra(bundle, "notpublicclass"));
+        assertNotNull(getExtra(bundle, "notpublicclass"));
 
         putExtra(bundle, "notpublic const", new NotPublicConstructor());
         assertNull(getExtra(bundle, "notpublic const"));
-    }
-
-    @Test
-    public void testLoadObjectOrOrigin() throws Exception {
-        String value = OBJECT_PREFIX + UUID.randomUUID() + "$$wsdObject";
-        saveToBook(value, "wsdObject");
-
-        Object ccf = loadObjectOrOrigin("ccf");
-        assertEquals(ccf, "ccf");
-
-        ccf = loadObjectOrOrigin("");
-        assertEquals(ccf, "");
-
-        ccf = loadObjectOrOrigin(OBJECT_PREFIX);
-        assertEquals(ccf, OBJECT_PREFIX);
-
-        Object wsd = loadObjectOrOrigin(value);
-        assertEquals(wsd, "wsdObject");
-
-        assertFalse(getBook().exist(value));
-        assertNull(loadObjectOrOrigin(value));
-    }
-
-    @Test
-    public void testSaveToBook() throws Exception {
-        assertNull(book.read("ccf"));
-
-        saveToBook("ccf", "value-object");
-        Object ccf = book.read("ccf");
-        assertEquals(ccf, "value-object");
-
-        saveToBook("ccf", "value-object");
-        ccf = book.read("ccf");
-        assertEquals(ccf, "value-object");
-
-        saveToBook("ccf", "value-object2");
-        ccf = book.read("ccf");
-        assertEquals(ccf, "value-object2");
-
-    }
-
-    @Test
-    public void testLoadFromBook() throws Exception {
-        Object wsd = loadFromBook("wsd");
-        assertEquals(wsd, null);
-
-        book.write("wsd", "wsd-object");
-        wsd = loadFromBook("wsd");
-        assertEquals(wsd, "wsd-object");
-    }
-
-    @Test
-    public void testRemoveBookKey() throws Exception {
-        testSaveToBook();
-        testLoadFromBook();
-
-        assertTrue(book.exist("wsd"));
-        assertTrue(book.exist("ccf"));
-        removeBookKey("wsd");
-        assertFalse(book.exist("wsd"));
-        assertTrue(book.exist("ccf"));
-
-        removeBookKey( "ccf");
-        assertFalse(book.exist("wsd"));
-        assertFalse(book.exist("ccf"));
-    }
-
-    @Test
-    public void testClearAllCache() throws Exception {
-        testSaveToBook();
-        testLoadFromBook();
-        assertTrue(book.exist("wsd"));
-        assertTrue(book.exist("ccf"));
-        clearAllCache();
-        assertFalse(book.exist("wsd"));
-        assertFalse(book.exist("ccf"));
-        int size = book.getAllKeys().size();
-        assertEquals(size, 0);
-    }
-
-    @Test
-    public void testRemoveKeyNotUuid() {
-        MyClass ccfValue = new MyClass("ccf-");
-        MyClass ccfValue2 = new MyClass("ccf-2");
-        Bundle bundle = new Bundle();
-
-        String uuid = UUID.randomUUID().toString();
-        String uuid2 = UUID.randomUUID().toString();
-        String key = "f32f24f430359ddb5022b16497ea2f79@";
-        putExtra(bundle, key + uuid, ccfValue);
-        putExtra(bundle, key + uuid2, ccfValue2);
-        removeKeyIfNotUuid(key, uuid);
-        Object ccf1 = getExtra(bundle, key + uuid);
-        Object ccf2 = getExtra(bundle, key + uuid2);
-        assertNotNull(ccf1);
-        assertNull(ccf2);
     }
 
 
@@ -189,12 +90,13 @@ public class MKBUtilsTest {
         }
     }
 
-    static class NotPublicClass {
+    private static class NotPublicClass {
 
     }
 
     public class NotPublicConstructor {
-        NotPublicConstructor() {
+        // non-static inner class is disallowed
+         NotPublicConstructor() {
 
         }
     }

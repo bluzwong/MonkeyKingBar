@@ -19,7 +19,9 @@ android {
 }
 
 dependencies {
-    compile 'io.paperdb:paperdb:1.1'
+    //compile 'io.paperdb:paperdb:1.1'
+    compile 'com.esotericsoftware:kryo:3.0.2'
+    compile 'de.javakaffee:kryo-serializers:0.33'
     testCompile 'junit:junit:4.12'
     testCompile ('org.robolectric:robolectric:3.0-rc3')// {exclude module: 'asm'}
 }

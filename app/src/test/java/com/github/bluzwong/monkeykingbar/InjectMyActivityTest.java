@@ -29,13 +29,11 @@ public class InjectMyActivityTest {
     public void setUp() throws Exception {
         Context = RuntimeEnvironment.application;
         MonkeyKingBar.init(Context);
-        MonkeyKingBar.clearAllCache();
     }
 
     @After
     public void tearDown() throws Exception {
         //MonkeyKingBar.clearAllCache();
-        MKBUtils.getBook().destroy();
     }
 
 

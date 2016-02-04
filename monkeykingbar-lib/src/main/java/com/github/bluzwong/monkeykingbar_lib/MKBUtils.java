@@ -5,8 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
-import io.paperdb.Book;
-import io.paperdb.Paper;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoException;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
+import de.javakaffee.kryoserializers.ArraysAsListSerializer;
+import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
+import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
@@ -20,10 +26,21 @@ public class MKBUtils {
     static final String OBJECT_PREFIX = "$$MKB$$";
     static final String OBJECT_SPLIT_REGEX = "\\$\\$";
 
-    static Book book;
+    static Kryo kryo = new Kryo();
 
-    public static Book getBook() {
-        return book;
+    static {
+        kryo.register(ContentContainer.class);
+        kryo.setDefaultSerializer(CompatibleFieldSerializer.class);
+        kryo.setReferences(false);
+        kryo.register(Arrays.asList("").getClass(), new ArraysAsListSerializer());
+        UnmodifiableCollectionsSerializer.registerSerializers(kryo);
+        SynchronizedCollectionsSerializer.registerSerializers(kryo);
+        // Serialize inner AbstractList$SubAbstractListRandomAccess
+        kryo.addDefaultSerializer(new ArrayList<>().subList(0, 0).getClass(),
+                new NoArgCollectionSerializer());
+        // Serialize AbstractList$SubAbstractList
+        kryo.addDefaultSerializer(new LinkedList<>().subList(0, 0).getClass(),
+                new NoArgCollectionSerializer());
     }
 
 
@@ -39,130 +56,91 @@ public class MKBUtils {
             return null;
         }
         Object value = bundle.get(name);
-        return loadObjectOrOrigin(value);
-    }
-
-    static Object loadObjectOrOrigin(Object value) {
         if (value == null) {
             return null;
         }
-        if (value instanceof String) {
-            String maybeKey = (String) value;
-            if (maybeKey.equals("") || !maybeKey.startsWith(OBJECT_PREFIX)) {
-                return value;
-            }
-            String[] keys = maybeKey.split(OBJECT_SPLIT_REGEX);
-            if (keys.length != 4) {
-                return value;
-            }
-            // $$MKB_Object$$15dca01c-492e-49cb-9c0d-fbf0b8c8fa30
-            if (keys[2].length() != "15dca01c-492e-49cb-9c0d-fbf0b8c8fa30".length()) {
-                return value;
-            }
-            Object loadFromBook = loadFromBook(maybeKey);
-            removeBookKey(maybeKey);
-            return loadFromBook;
+        if (!(value instanceof String)) {
+            // not byte array just return
+            return value;
         }
-        return value;
-    }
 
-    static void saveToBook(String key, Object value) {
-        if (key == null || value == null) {
-            return;
+        // maybe byte array key
+        String maybeKey = (String) value;
+        if (maybeKey.equals("") || !maybeKey.startsWith(OBJECT_PREFIX)) {
+            return value;
         }
-        if (book == null) {
-            throw new IllegalArgumentException("book is null ");
+        String[] keys = maybeKey.split(OBJECT_SPLIT_REGEX);
+        if (keys.length != 4) {
+            return value;
         }
-        /*if (book.exist(key)) {
-            book.delete(key);
-        }*/
+        // $$MKB_Object$$15dca01c-492e-49cb-9c0d-fbf0b8c8fa30
+        if (keys[2].length() != "15dca01c-492e-49cb-9c0d-fbf0b8c8fa30".length()) {
+            return value;
+        }
+        // its the key
+        byte[] inputByteArray = (byte[]) getExtra(bundle, maybeKey);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(inputByteArray);
+        Input input = new Input(inputStream);
         try {
-            Constructor<?> constructor = value.getClass().getConstructor();
-            if (constructor == null) {
-                return;
+            ContentContainer container = kryo.readObject(input, ContentContainer.class);
+            if (container == null) {
+                return null;
             }
-            int modifiers = constructor.getModifiers();
-            if (!Modifier.isPublic(modifiers)) {
-                Log.w("MonkeyKingBar", value.getClass() + " constructor is not public , can not save.");
-                return;
-            }
-        } catch (NoSuchMethodException e) {
-            Log.w("MonkeyKingBar", value.getClass() + " missing no-arg constructor, can not save.");
+            return container.content;
+        } catch (KryoException e) {
             e.printStackTrace();
-            return;
-        }
-        int modifiers = value.getClass().getModifiers();
-        if (!Modifier.isPublic(modifiers)) {
-            Log.w("MonkeyKingBar", value.getClass() + " class is not public , can not save.");
-            return;
-        }
-        book.write(key, value);
-    }
-
-    static Object loadFromBook(String key) {
-        if (book == null) {
-            throw new IllegalArgumentException("book is null ");
-        }
-
-        if (!book.exist(key)) {
-            return null;
-        }
-        return book.read(key);
-    }
-
-    static void removeBookKey(String key) {
-        if (!book.exist(key)) {
-            return;
-        }
-        book.delete(key);
-    }
-
-    public static void removeKeyIfNotUuid(String keyName, String uuid) {
-        for (String key : book.getAllKeys()) {
-            if (key.contains(keyName) && !key.contains(uuid)) {
-                book.delete(key);
+        } finally {
+            input.close();
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+        return null;
     }
 
-    public static void removeCache(String key) {
-        if (book == null) {
-            throw new IllegalArgumentException("book is null ");
-        }
-        List<String> allKeys = book.getAllKeys();
-        if (allKeys == null || allKeys.size() == 0) {
-            return;
-        }
-        for (String thisKey : allKeys) {
-            if (thisKey.endsWith(key)) {
-                removeBookKey(thisKey);
-            }
-        }
-    }
 
-    static synchronized void clearAllCache() {
-        if (book.getAllKeys().size() <= 0) {
-            return;
-        }
-        for (String key : book.getAllKeys()) {
-            book.delete(key);
-        }
-    }
 
     public static Intent putExtra(Intent intent, String name, Object value) {
         String uuid = UUID.randomUUID().toString();
         String key = OBJECT_PREFIX + uuid + "$$" + name;
-        saveToBook(key, value);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Output output = new Output(outputStream);
+        kryo.writeObject(output, new ContentContainer(value));
+        output.flush();
+        try {
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        output.close();
+        //saveToBook(key, value);
         putExtra(intent, name, key);
+        byte[] bytes = outputStream.toByteArray();
+        putExtra(intent, key, bytes);
         return intent;
     }
-
 
     public static Bundle putExtra(Bundle bundle, String name, Object value) {
         String uuid = UUID.randomUUID().toString();
         String key = OBJECT_PREFIX + uuid + "$$" + name;
-        saveToBook(key, value);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Output output = new Output(outputStream);
+        kryo.writeObject(output, new ContentContainer(value));
+        output.flush();
+        try {
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        output.close();
+        //saveToBook(key, value);
         putExtra(bundle, name, key);
+        byte[] bytes = outputStream.toByteArray();
+        putExtra(bundle, key, bytes);
         return bundle;
     }
 

@@ -66,7 +66,7 @@ public class InjectFieldInjector {
             builder.append("String " + key + " = UUID.randomUUID().toString();\n");
             builder.append("MKBUtils.maps.put(" + key +", " + fieldName + ");");
         } else {
-            builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
+            //builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
             builder.append("MKBUtils.putExtra(intent,\"" + className + "\"+uuid, " + fieldName + ");\n");
         }
 

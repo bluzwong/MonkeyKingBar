@@ -61,7 +61,7 @@ public class KeepFieldInjector {
             builder.append("String " + key + " = UUID.randomUUID().toString();\n");
             builder.append("MKBUtils.maps.put(" + key +", target." + fieldName + ");\n");
         } else {
-            builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
+            //builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
             builder.append("MKBUtils.putExtra(outState,").append("\"" + className + "\"+uuid, target. " + fieldName).append(");\n");
         }
         return builder.toString();

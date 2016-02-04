@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import io.paperdb.Paper;
 
 import java.util.List;
 
@@ -21,29 +20,7 @@ public class MonkeyKingBar {
     }
     public static void init(Context context) {
         setContext(context);
-        Paper.init(sContext);
-        MKBUtils.book = Paper.book("MKB_CACHE_BOOK");
     }
-
-    public static void clearAllCache() {
-        MKBUtils.clearAllCache();
-    }
-
-   /* public static void onDestroy(Activity activity) {
-        List<Inject> injects = InjectFactory.create(activity);
-        if (injects != null && injects.size() > 0) {
-            for (Inject inject : injects) {
-                inject.onDestroy();
-            }
-            return;
-        }
-        List<Keep> keeps = KeepFactory.create(activity);
-        if (keeps != null && keeps.size() > 0) {
-            for (Keep keep : keeps) {
-                keep.onDestroy();
-            }
-        }
-    }*/
 
     /**
      * inject any way
@@ -63,6 +40,7 @@ public class MonkeyKingBar {
         }
     }
 
+    @Deprecated
     public static void injectExtrasAsync(final Object target, final Intent intent, final ExtraInjectedListener listener) {
         if (target == null || intent == null) {
             return;
@@ -116,6 +94,7 @@ public class MonkeyKingBar {
         }
     }
 
+    @Deprecated
     public static void keepStateOnCrateAsync(final Object target, final Bundle savedInstanceState, final StateRestoredListener listener) {
         if (target == null || savedInstanceState == null) {
             return;
