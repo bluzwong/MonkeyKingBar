@@ -27,6 +27,7 @@ public class AnnotationProcessor extends AbstractProcessor{
     private Elements elementUtils;
     private Types typeUtils;
 
+    private boolean needLog = false;
     @Override
     public synchronized void init(ProcessingEnvironment env) {
         super.init(env);
@@ -84,9 +85,11 @@ public class AnnotationProcessor extends AbstractProcessor{
         }*/
         for (TypeElement te : annotations) {
             // te = zhujie
-            String annoName = te.getSimpleName().toString();
+            String annoName = te.getQualifiedName().toString();
             log(" anno name => " + annoName); //  anno name => InjectExtra
-
+            if (!getSupportedAnnotationTypes().contains(annoName)) {
+                continue;
+            }
             for (Element e : roundEnv.getElementsAnnotatedWith(te)) {
                 //log("work on -> " + e.toString());
                 Name fieldName = e.getSimpleName();
@@ -176,6 +179,9 @@ public class AnnotationProcessor extends AbstractProcessor{
         return elementUtils.getPackageOf(type).getQualifiedName().toString();
     }
     private void log(String msg) {
+        if (!needLog) {
+            return;
+        }
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, msg);
     }
 }
