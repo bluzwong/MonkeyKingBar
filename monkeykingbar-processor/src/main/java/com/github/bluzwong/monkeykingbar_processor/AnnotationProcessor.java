@@ -88,6 +88,7 @@ public class AnnotationProcessor extends AbstractProcessor{
             String annoName = te.getQualifiedName().toString();
             log(" anno name => " + annoName); //  anno name => InjectExtra
             if (!getSupportedAnnotationTypes().contains(annoName)) {
+                log("not supported annotation => " + annoName);
                 continue;
             }
             for (Element e : roundEnv.getElementsAnnotatedWith(te)) {
@@ -123,12 +124,12 @@ public class AnnotationProcessor extends AbstractProcessor{
                     }
                 }
 
-                if (annoName.equals("InjectExtra")) {
+                if (annoName.contains("InjectExtra")) {
                     log("InjectExtra => " + isUnserializable);
                     InjectFieldInjector injectFieldInjector = new InjectFieldInjector(fieldName.toString(), fieldType, isUnserializable);
                     injector.addInjectField(injectFieldInjector);
                 }
-                if (annoName.equals("KeepState")) {
+                if (annoName.contains("KeepState")) {
                     KeepFieldInjector keepFieldInjector = new KeepFieldInjector(fieldName.toString(), fieldType, isUnserializable);
                     injector.addKeepField(keepFieldInjector);
                 }

@@ -37,11 +37,11 @@ dependencies {
     //compile 'com.android.support:design:22.2.1'
     testCompile 'com.android.support:support-annotations:22.1.1'
 
-//    compile project (':monkeykingbar-lib')
-//    kapt project (':monkeykingbar-processor')
-
-    kapt 'com.github.bluzwong:monkeykingbar-processor:0.1.2'
-    compile ('com.github.bluzwong:monkeykingbar-lib:0.1.1')// { transitive = true }
+    compile project (':monkeykingbar-lib')
+    kapt project (':monkeykingbar-processor')
+//
+//    kapt 'com.github.bluzwong:monkeykingbar-processor:0.1.4'
+//    compile ('com.github.bluzwong:monkeykingbar-lib:0.1.1')// { transitive = true }
 
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
