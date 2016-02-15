@@ -10,15 +10,15 @@ public class KeepFieldInjector {
     private String fieldName, fieldType;
 
     public static final String PREFIX = "MKB_";
-    private boolean unSerializable = false;
-    public boolean isUnSerializable() {
-        return unSerializable;
+    private boolean asProperty = false;
+    public boolean isAsProperty() {
+        return asProperty;
     }
 
-    public KeepFieldInjector(String fieldName, String fieldType, boolean unSerializable) {
+    public KeepFieldInjector(String fieldName, String fieldType, boolean asProperty) {
         this.fieldName = fieldName;
         this.fieldType = fieldType;
-        this.unSerializable = unSerializable;
+        this.asProperty = asProperty;
     }
     private String className;
     public void setClassName(String fieldKey) {
@@ -34,32 +34,23 @@ public class KeepFieldInjector {
     }
     public String brewOnCreateJava(int index) {
         StringBuilder builder = new StringBuilder();
+        builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \"" + className + "\" +uuid);\n");
+        builder.append(" if (obj != null) { ");
+        if (isAsProperty()) {
 
-        if (isUnSerializable()) {
-            builder.append("if (objs != null && objs.length > " + index +" && MKBUtils.maps.containsKey(objs["+index+"])) {\n");
-            builder.append("generalObj = MKBUtils.maps.get(objs["+index+"]);\n");
-            builder.append("if (generalObj != null) {\n");
-            builder.append("target." + fieldName + " = (" + fieldType + ") generalObj;\n");
-            builder.append("MKBUtils.maps.remove(objs["+index+"]);\n");
-            builder.append("}\n}\n");
-
+            builder.append("    target.set" + captureName(fieldName) + "((" + fieldType + ") obj);\n");
         } else {
-            builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \"" + className + "\" +uuid);\n");
-            builder.append(" if (obj != null) { ");
             builder.append("    target." + fieldName + " = (" + fieldType + ") obj;\n");
-            builder.append(" }");
-
         }
+        builder.append(" }");
         return builder.toString();
     }
 
     public String brewSaveState() {
         StringBuilder builder = new StringBuilder();
 
-        if (isUnSerializable()) {
-            String key = fieldName + "_key";
-            builder.append("String " + key + " = UUID.randomUUID().toString();\n");
-            builder.append("MKBUtils.maps.put(" + key +", target." + fieldName + ");\n");
+        if (isAsProperty()) {
+            builder.append("MKBUtils.putExtra(outState,").append("\"" + className + "\"+uuid, target.get" + captureName(fieldName)).append("());\n");
         } else {
             //builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
             builder.append("MKBUtils.putExtra(outState,").append("\"" + className + "\"+uuid, target. " + fieldName).append(");\n");
@@ -75,5 +66,9 @@ public class KeepFieldInjector {
         //System.out.println(new KeepFieldInjector("datas", "ArrayList<String>").brewOnCreateJava());
         //System.out.println(new KeepFieldInjector("datas", "ArrayList<String>").brewSaveState());
     }
+    public static String captureName(String name) {
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        return  name;
 
+    }
 }

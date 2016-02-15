@@ -19,16 +19,8 @@ public class MyActivity extends Activity {
     String bar;
 
     //@UnSerializable
-    @InjectExtra
-    @KeepState(asProperty = true)
+    @InjectExtra(asProperty = false)
+    @KeepState(asProperty = false)
     MyClass myClass;
 
-    public MyClass getMyClass() {
-        //com.github.bluzwong.monkeykingbar.MyClass m = null;
-        return myClass;
-    }
-
-    public void setMyClass(MyClass myClass) {
-        this.myClass = myClass;
-    }
 }

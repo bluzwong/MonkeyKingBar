@@ -7,12 +7,11 @@ import com.github.bluzwong.monkeykingbar_lib.KeepState
  * Created by Bruce-Home on 2016/2/4.
  */
 class TestKotlinApt {
-    @KeepState
-    @InjectExtra
-    lateinit var ccf:String
+    @KeepState(asProperty = true)
+    @InjectExtra(asProperty = true)
+    var ccf:String = ""
 
-    @InjectExtra
-    @KeepState
-    @JvmField
+    @InjectExtra(asProperty = true)
+    @KeepState(asProperty = true)
     var miku_huya: Int? = 0
 }

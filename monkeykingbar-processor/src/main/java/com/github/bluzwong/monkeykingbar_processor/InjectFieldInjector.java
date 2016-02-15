@@ -51,11 +51,11 @@ public class InjectFieldInjector {
     public static String captureName(String name) {
         name = name.substring(0, 1).toUpperCase() + name.substring(1);
         return  name;
-
     }
+
     public String brewPutExtra() {
         StringBuilder builder = new StringBuilder();
-        builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
+        //builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
         builder.append("MKBUtils.putExtra(intent,\"" + className + "\"+uuid, " + fieldName + ");\n");
         return builder.toString();
     }

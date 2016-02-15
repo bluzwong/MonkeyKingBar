@@ -255,7 +255,7 @@ public class ClassInjector {
             int index = 0;
             for (KeepFieldInjector field : keepFields) {
                 builder.append(field.brewOnCreateJava(index));
-                if (field.isUnSerializable()) {
+                if (field.isAsProperty()) {
                     index++;
                 }
             }
@@ -293,7 +293,7 @@ public class ClassInjector {
 
                 boolean init = true;
                 for (KeepFieldInjector keepInject : keepFields) {
-                    if (keepInject.isUnSerializable()) {
+                    if (keepInject.isAsProperty()) {
                         if (!init) {
                             builder.append(", ");
                         }
@@ -338,7 +338,7 @@ public class ClassInjector {
 
     private boolean isKeepHasUnSerial() {
         for (KeepFieldInjector injector : keepFields) {
-            if (injector.isUnSerializable()) {
+            if (injector.isAsProperty()) {
                 return true;
             }
         }
