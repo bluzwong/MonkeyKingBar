@@ -40,7 +40,7 @@ dependencies {
     compile project (':monkeykingbar-lib')
     kapt project (':monkeykingbar-processor')
 //
-//    kapt 'com.github.bluzwong:monkeykingbar-processor:0.1.4'
+//    kapt 'com.github.bluzwong:monkeykingbar-processor:0.1.5'
 //    compile ('com.github.bluzwong:monkeykingbar-lib:0.1.1')// { transitive = true }
 
 
