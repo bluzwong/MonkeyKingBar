@@ -128,15 +128,15 @@ public class ClassInjector {
             builder.append("Object obj = null;\n");
             //builder.append("Intent intent = activity.getIntent();\n");
 
-            if (isInjectHasUnSerial()) {
+            /*if (isInjectHasUnSerial()) {
                 builder.append("obj = MKBUtils.getExtra(intent, \"MKB@" + unserUUID +"\");\n");
                 builder.append(" String[] objs = (String[]) obj; \n");
                 builder.append("Object generalObj;\n");
-            }
+            }*/
 
             for (InjectFieldInjector field : injectFields) {
                 builder.append(field.brewInjectExtrasJava(index));
-                if (field.isUnSerializable()) {
+                if (field.isAsProperty()) {
                     index++;
                 }
             }
@@ -175,12 +175,12 @@ public class ClassInjector {
                 builder.append(field.brewPutExtra());
             }
 
-            if (isInjectHasUnSerial()) {
+            /*if (isInjectHasUnSerial()) {
                 builder.append("MKBUtils.putExtra(intent, \"MKB@"+unserUUID+"\", new String[] {");
 
                 boolean init = true;
                 for (InjectFieldInjector injectField : injectFields) {
-                    if (injectField.isUnSerializable()) {
+                    if (injectField.isAsProperty()) {
                         if (!init) {
                             builder.append(", ");
                         }
@@ -191,7 +191,7 @@ public class ClassInjector {
                 }
 
                 builder.append("} );\n");
-            }
+            }*/
 
             builder.append("return intent;}\n");
 
@@ -246,12 +246,12 @@ public class ClassInjector {
             builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
             builder.append("Object obj;\n");
 
-            if (isKeepHasUnSerial()) {
+           /* if (isKeepHasUnSerial()) {
                 builder.append("obj = MKBUtils.getExtra(savedInstanceState, \"MKB@"+unserUUID+"\");");
                 builder.append("String[] objs = (String[]) obj;\n");
                 builder.append("Object generalObj;\n");
 
-            }
+            }*/
             int index = 0;
             for (KeepFieldInjector field : keepFields) {
                 builder.append(field.brewOnCreateJava(index));
@@ -288,7 +288,7 @@ public class ClassInjector {
                 builder.append(field.brewSaveState());
             }
 
-            if (isKeepHasUnSerial()) {
+            /*if (isKeepHasUnSerial()) {
                 builder.append("MKBUtils.putExtra(outState, \"MKB@"+unserUUID+"\", new String[] {");
 
                 boolean init = true;
@@ -304,7 +304,7 @@ public class ClassInjector {
                 }
 
                 builder.append("} );\n");
-            }
+            }*/
             builder.append("} \n");
         }
 
@@ -329,7 +329,7 @@ public class ClassInjector {
 
     private boolean isInjectHasUnSerial() {
         for (InjectFieldInjector injector : injectFields) {
-            if (injector.isUnSerializable()) {
+            if (injector.isAsProperty()) {
                 return true;
             }
         }

@@ -11,14 +11,14 @@ public class InjectFieldInjector {
     public static final String PREFIX = "MKB_";
     private String className = "";
 
-    private boolean unSerializable = false;
-    public boolean isUnSerializable() {
-        return unSerializable;
+    private boolean asProperty = false;
+    public boolean isAsProperty() {
+        return asProperty;
     }
-    public InjectFieldInjector(String fieldName, String fieldType, boolean unSerializable) {
+    public InjectFieldInjector(String fieldName, String fieldType, boolean asProperty) {
         this.fieldName = fieldName;
         this.fieldType = fieldType;
-        this.unSerializable = unSerializable;
+        this.asProperty = asProperty;
     }
 
     public void setClassName(String fieldKey) {
@@ -35,41 +35,28 @@ public class InjectFieldInjector {
 
     public String brewInjectExtrasJava(int index) {
         StringBuilder builder = new StringBuilder();
-        if (unSerializable) {
+        builder.append(" obj = MKBUtils.getExtra(intent, \"" + className + "\" +uuid);\n");
 
-            builder.append("if (objs != null && objs.length > " + index +" && MKBUtils.maps.containsKey(objs["+index+"])) {\n");
-            builder.append("generalObj = MKBUtils.maps.get(objs["+index+"]);\n");
-            builder.append("if (generalObj != null) {\n");
-            builder.append("target." + fieldName + " = (" + fieldType + ") generalObj;\n");
-            builder.append("MKBUtils.maps.remove(objs["+index+"]);\n");
-            builder.append("}\n}\n");
+        builder.append(" if (obj != null) { ");
 
-
+        if (asProperty) {
+            builder.append("    target.set" + captureName(fieldName) + "((" + fieldType + ") obj);\n");
         } else {
-
-            builder.append(" obj = MKBUtils.getExtra(intent, \"" + className + "\" +uuid);\n");
-
-            builder.append(" if (obj != null) { ");
             builder.append("    target." + fieldName + " = (" + fieldType + ") obj;\n");
-            builder.append(" }");
         }
-
+        builder.append(" }");
         return builder.toString();
     }
 
+    public static String captureName(String name) {
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        return  name;
 
+    }
     public String brewPutExtra() {
         StringBuilder builder = new StringBuilder();
-
-        if (unSerializable) {
-            String key = fieldName + "_key";
-            builder.append("String " + key + " = UUID.randomUUID().toString();\n");
-            builder.append("MKBUtils.maps.put(" + key +", " + fieldName + ");");
-        } else {
-            //builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
-            builder.append("MKBUtils.putExtra(intent,\"" + className + "\"+uuid, " + fieldName + ");\n");
-        }
-
+        builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
+        builder.append("MKBUtils.putExtra(intent,\"" + className + "\"+uuid, " + fieldName + ");\n");
         return builder.toString();
     }
     public String brewDestroy() {

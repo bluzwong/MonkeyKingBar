@@ -20,6 +20,15 @@ public class MyActivity extends Activity {
 
     //@UnSerializable
     @InjectExtra
-    @KeepState
+    @KeepState(asProperty = true)
     MyClass myClass;
+
+    public MyClass getMyClass() {
+        //com.github.bluzwong.monkeykingbar.MyClass m = null;
+        return myClass;
+    }
+
+    public void setMyClass(MyClass myClass) {
+        this.myClass = myClass;
+    }
 }

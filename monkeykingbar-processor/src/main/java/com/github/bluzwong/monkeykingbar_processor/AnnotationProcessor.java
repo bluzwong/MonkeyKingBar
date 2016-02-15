@@ -2,9 +2,6 @@ package com.github.bluzwong.monkeykingbar_processor;
 
 
 
-import com.github.bluzwong.monkeykingbar_lib.InjectExtra;
-import com.google.auto.service.AutoService;
-
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
@@ -14,7 +11,10 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.Writer;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by wangzhijie@wind-mobi.com on 2015/9/24.
@@ -99,6 +99,24 @@ public class AnnotationProcessor extends AbstractProcessor{
                 log("fieldName -> " + fieldName); //   fieldName -> ccf
                 log("fieldInClass -> " + className); //   fieldInClass -> com.github.bluzwong.mycache.MainActivity
                 log("fieldType -> " + fieldType); //   fieldType -> int
+                final boolean[] isKeepStateAsProperty = {false};
+
+                for (AnnotationMirror mirror : e.getAnnotationMirrors()) {
+                    DeclaredType annotationType = mirror.getAnnotationType();
+                    if (annotationType.toString().equals("com.github.bluzwong.monkeykingbar_lib.KeepState")) {
+                        Map<? extends ExecutableElement, ? extends AnnotationValue> values = mirror.getElementValues();
+                        values.forEach(new BiConsumer<ExecutableElement, AnnotationValue>() {
+                            @Override
+                            public void accept(ExecutableElement executableElement, AnnotationValue annotationValue) {
+                                if (executableElement.toString().equals("asProperty()")) {
+                                    String valueString = annotationValue.getValue().toString();
+                                    log("asProperty() => " + valueString);
+                                    isKeepStateAsProperty[0] = "true".equals(valueString);
+                                }
+                            }
+                        });
+                    }
+                }
 
                 ClassInjector injector = getOrCreateTargetClass(targetClassMap, className);
                 List<String> fields = new ArrayList<String>();
@@ -126,7 +144,7 @@ public class AnnotationProcessor extends AbstractProcessor{
 
                 if (annoName.contains("InjectExtra")) {
                     log("InjectExtra => " + isUnserializable);
-                    InjectFieldInjector injectFieldInjector = new InjectFieldInjector(fieldName.toString(), fieldType, isUnserializable);
+                    InjectFieldInjector injectFieldInjector = new InjectFieldInjector(fieldName.toString(), fieldType, isKeepStateAsProperty[0]);
                     injector.addInjectField(injectFieldInjector);
                 }
                 if (annoName.contains("KeepState")) {
