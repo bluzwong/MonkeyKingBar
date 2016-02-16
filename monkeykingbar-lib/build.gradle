@@ -26,4 +26,4 @@ dependencies {
     testCompile ('org.robolectric:robolectric:3.0-rc3')// {exclude module: 'asm'}
 }
 
-//apply from: 'push.gradle'
+apply from: 'push.gradle'
