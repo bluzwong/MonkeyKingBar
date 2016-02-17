@@ -3,9 +3,6 @@ apply plugin: 'java'
 apply plugin: 'maven'
 group = 'com.github.bluzwong'
 
-sourceCompatibility = 1.8 // java 8
-targetCompatibility = 1.8
-
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
@@ -15,6 +12,8 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
+
+
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
