@@ -1,13 +1,8 @@
 
-plugins {
-    id "java"
-    id "maven-publish"
-    id "com.jfrog.bintray" version "1.2"
-}
 apply plugin: 'java'
-
-version="0.1.5"  // The version
+apply plugin: 'maven'
 group = 'com.github.bluzwong'
+
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
@@ -16,38 +11,6 @@ task sourceJar(type: Jar) {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {  // Artifacts to publish
-            from components.java
-            artifact sourceJar
-            artifact javadocJar
-        }
-    }
-}
-
-bintray {
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-    user = properties.getProperty('bintray.user')
-    key = properties.getProperty('bintray.apikey')
-
-    dryRun = false
-    publish = true
-    publications = ['mavenJava']
-    pkg {
-        repo = 'maven'         // The repository
-        name = 'monkeykingbar-processor' // The package
-        desc = 'monkeykingbar-processor'
-        websiteUrl = 'https://github.com/bluzwong/monkeykingbar'
-        issueTrackerUrl = 'https://github.com/bluzwong/monkeykingbar'
-        vcsUrl = 'https://github.com/bluzwong/monkeykingbar'
-        licenses = ['Apache-2.0']
-        labels = [['android', 'library']]
-        publicDownloadNumbers = true
-    }
 }
 
 dependencies {
