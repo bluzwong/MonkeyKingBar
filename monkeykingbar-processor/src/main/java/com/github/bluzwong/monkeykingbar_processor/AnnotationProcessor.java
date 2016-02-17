@@ -16,7 +16,7 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.Writer;
 import java.util.*;
-import java.util.function.BiConsumer;
+//import java.util.function.BiConsumer;
 
 /**
  * Created by wangzhijie@wind-mobi.com on 2015/9/24.
@@ -108,7 +108,16 @@ public class AnnotationProcessor extends AbstractProcessor{
                     DeclaredType annotationType = mirror.getAnnotationType();
                     if (annotationType.toString().equals("com.github.bluzwong.monkeykingbar_lib.KeepState")) {
                         Map<? extends ExecutableElement, ? extends AnnotationValue> values = mirror.getElementValues();
-                        values.forEach(new BiConsumer<ExecutableElement, AnnotationValue>() {
+
+                        for (ExecutableElement executableElement:values.keySet()) {
+                            AnnotationValue annotationValue = values.get(executableElement);
+                            if (executableElement.toString().equals("asProperty()")) {
+                                String valueString = annotationValue.getValue().toString();
+                                log("asProperty() => " + valueString);
+                                isKeepStateAsProperty[0] = "true".equals(valueString);
+                            }
+                        }
+                        /*values.forEach(new BiConsumer<ExecutableElement, AnnotationValue>() {
                             @Override
                             public void accept(ExecutableElement executableElement, AnnotationValue annotationValue) {
                                 if (executableElement.toString().equals("asProperty()")) {
@@ -117,11 +126,21 @@ public class AnnotationProcessor extends AbstractProcessor{
                                     isKeepStateAsProperty[0] = "true".equals(valueString);
                                 }
                             }
-                        });
+                        });*/
                     }
                     if (annotationType.toString().equals("com.github.bluzwong.monkeykingbar_lib.InjectExtra")) {
                         Map<? extends ExecutableElement, ? extends AnnotationValue> values = mirror.getElementValues();
-                        values.forEach(new BiConsumer<ExecutableElement, AnnotationValue>() {
+
+                        for (ExecutableElement executableElement:values.keySet()) {
+                            AnnotationValue annotationValue = values.get(executableElement);
+                            if (executableElement.toString().equals("asProperty()")) {
+                                String valueString = annotationValue.getValue().toString();
+                                log("asProperty() => " + valueString);
+                                isInjectfieldAsProperty[0] = "true".equals(valueString);
+                            }
+                        }
+
+                        /*values.forEach(new BiConsumer<ExecutableElement, AnnotationValue>() {
                             @Override
                             public void accept(ExecutableElement executableElement, AnnotationValue annotationValue) {
                                 if (executableElement.toString().equals("asProperty()")) {
@@ -130,7 +149,7 @@ public class AnnotationProcessor extends AbstractProcessor{
                                     isInjectfieldAsProperty[0] = "true".equals(valueString);
                                 }
                             }
-                        });
+                        });*/
                     }
                 }
 
