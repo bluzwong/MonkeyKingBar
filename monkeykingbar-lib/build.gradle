@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'com.github.dcendents.android-maven'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
@@ -25,5 +25,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile ('org.robolectric:robolectric:3.0-rc3')// {exclude module: 'asm'}
 }
-
-apply from: 'push.gradle'
+group='com.github.bluzwong'
+//apply from: 'push.gradle'
