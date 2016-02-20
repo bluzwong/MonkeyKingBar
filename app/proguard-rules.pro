@@ -25,8 +25,14 @@
 #-dontwarn com.esotericsoftware.**
 #-keep class de.javakaffee.kryoserializers.** { *; }
 #-dontwarn de.javakaffee.kryoserializers.**
-
-
+# need manual avoid class name that have mkb annotation on fields
+-keep class com.github.bluzwong.monkeykingbar.TestKotlinApt
+#-keepnames class * {
+#    @com.github.bluzwong.monkeykingbar_lib.** <fields>;
+#}
+#-keepclasseswithmembernames class * {
+#    @com.github.bluzwong.monkeykingbar_lib.** <methods>;
+#}
 # common
 -keepattributes SourceFile,LineNumberTable,Exceptions
 -keepnames class * extends java.lang.Throwable
