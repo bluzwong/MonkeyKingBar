@@ -14,7 +14,8 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            signingConfig signingConfigs.debug
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -22,8 +23,14 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    lintOptions{
+        abortOnError false
+    }
+
+
 }
 repositories {
+    maven { url "https://www.jitpack.io" }
     maven {
         url = 'https://dl.bintray.com/bluzwong/maven'
     }
@@ -37,11 +44,11 @@ dependencies {
     //compile 'com.android.support:design:22.2.1'
     testCompile 'com.android.support:support-annotations:22.1.1'
 
-    compile project (':monkeykingbar-lib')
-    kapt project (':monkeykingbar-processor')
-//
-//    kapt 'com.github.bluzwong:monkeykingbar-processor:0.1.5'
-//    compile ('com.github.bluzwong:monkeykingbar-lib:0.1.1')// { transitive = true }
+//    compile project (':monkeykingbar-lib')
+//    kapt project (':monkeykingbar-processor')
+
+    kapt 'com.github.bluzwong.monkeykingbar:monkeykingbar-processor:0.2.0'
+    compile ('com.github.bluzwong.monkeykingbar:monkeykingbar-lib:0.2.0')// { transitive = true }
 
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
