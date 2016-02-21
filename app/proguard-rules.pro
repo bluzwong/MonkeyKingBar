@@ -37,11 +37,14 @@
 #-keepclasseswithmembernames  class * {
 #    @com.github.bluzwong.monkeykingbar_lib.KeepState <fields>;
 #}
--keepclasseswithmembernames class * {
-    @com.github.bluzwong.monkeykingbar_lib.* <fields>;
-}
--keep class com.github.bluzwong.monkeykingbar_lib.InjectExtra
--keep class com.github.bluzwong.monkeykingbar_lib.KeepState
+#-keepclasseswithmembernames class * {
+#    @com.github.bluzwong.monkeykingbar_lib.* <fields>;
+#}
+#-keep class com.github.bluzwong.monkeykingbar_lib.InjectExtra
+#-keep class com.github.bluzwong.monkeykingbar_lib.KeepState
+
+
+
 # common
 -keepattributes SourceFile,LineNumberTable,Exceptions
 -keepnames class * extends java.lang.Throwable

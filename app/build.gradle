@@ -47,9 +47,8 @@ dependencies {
 //    compile project (':monkeykingbar-lib')
 //    kapt project (':monkeykingbar-processor')
 
-    kapt 'com.github.bluzwong.monkeykingbar:monkeykingbar-processor:0.2.1'
-    compile ('com.github.bluzwong.monkeykingbar:monkeykingbar-lib:0.2.1')// { transitive = true }
-
+    kapt 'com.github.bluzwong.monkeykingbar:monkeykingbar-processor:0.2.2'
+    compile ('com.github.bluzwong.monkeykingbar:monkeykingbar-lib:0.2.2@aar') { transitive = true }
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
