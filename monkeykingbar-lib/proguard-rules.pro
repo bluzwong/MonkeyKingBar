@@ -18,6 +18,12 @@
 
 # Monkey King Bar
 -keep class **_MKB
+-keepclasseswithmembernames class * {
+    @com.github.bluzwong.monkeykingbar_lib.* <fields>;
+}
+-keep class com.github.bluzwong.monkeykingbar_lib.InjectExtra
+-keep class com.github.bluzwong.monkeykingbar_lib.KeepState
+
 -dontwarn sun.misc.**
 -keep class sun.misc.** {*;}
 -keep class * implements java.io.Serializable { *; }
