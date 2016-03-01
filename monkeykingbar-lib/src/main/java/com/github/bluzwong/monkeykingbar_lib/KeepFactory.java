@@ -1,53 +1,45 @@
 package com.github.bluzwong.monkeykingbar_lib;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by wangzhijie@wind-mobi.com on 2015/9/25.
  */
 public class KeepFactory {
 
-    private static final Map<String, List<Keep>> injectionMap = new HashMap<>();
-    static List<Keep> create(Object target) {
+    private static final Map<String, Keep> keepMap = new HashMap<>();
+    static Keep create(Object target) {
 
         Class<?> targetClass = target.getClass();
         String clzName = targetClass.getCanonicalName();
-        if (injectionMap.containsKey(clzName)) {
-            List<Keep> iKeep = injectionMap.get(clzName);
+        if (keepMap.containsKey(clzName)) {
+            Keep iKeep = keepMap.get(clzName);
             if (iKeep != null) {
                 return iKeep;
             }
         }
-        List<Keep> findOutKeep = findKeepClass(targetClass);
-        injectionMap.put(clzName, findOutKeep);
+        Keep findOutKeep = findKeepClass(targetClass);
+        keepMap.put(clzName, findOutKeep);
         return findOutKeep;
     }
 
-    private static List<Keep> findKeepClass(Class<?> clz) {
+    private static Keep findKeepClass(Class<?> clz) {
         if (clz == null) {
             return null;
         }
-        ArrayList<Keep> keeps = new ArrayList<>();
-        Class<?> p_clz = clz;
-
-        while (p_clz != null) {
-            try {
-                Class<?> injectClz = Class.forName(p_clz.getCanonicalName() + "_MKB");
-                Keep iKeep = (Keep) injectClz.newInstance();
-                if (!keeps.contains(iKeep)) {
-                    keeps.add(iKeep);
-                }
-            } catch (ClassNotFoundException e) {
-                //iKeep = findKeepClass(clz.getSuperclass());
-                //e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            p_clz = p_clz.getSuperclass();
+        Keep iKeep = null;
+        try {
+            Class<?> keepClz = Class.forName(clz.getCanonicalName() + "_MKB");
+            iKeep = (Keep) keepClz.newInstance();
+        } catch (ClassNotFoundException e) {
+            iKeep = findKeepClass(clz.getSuperclass());
+            //e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
-        Collections.reverse(keeps);
-        return keeps;
+        return iKeep;
     }
 }

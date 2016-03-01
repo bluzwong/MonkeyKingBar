@@ -67,14 +67,14 @@ public class MonkeyKingBar {
             // no state to keep
             return;
         }
-        List<Keep> keeps = KeepFactory.create(target);
-        if (keeps == null || keeps.size() <= 0) {
+        Keep keep = KeepFactory.create(target);
+        if (keep == null ) {
             logw("@KeepState not found, can not create injector !");
             return;
         }
-        for (Keep keep : keeps) {
+        //for (Keep keep : keeps) {
             keep.onCreate(target, savedInstanceState);
-        }
+        //}
     }
 
     public static void keepStateOnCreate(Activity target) {
@@ -84,19 +84,21 @@ public class MonkeyKingBar {
         }
         FragmentManager fragmentManager = target.getFragmentManager();
         Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG);
-        if (fragment == null || !(fragment instanceof KeepStateFragment)) {
+        if (fragment == null || !(fragment instanceof Keep)) {
             return;
         }
-        KeepStateFragment keepStateFragment = (KeepStateFragment) fragment;
+        Keep keep = (Keep) fragment;
+        keep.onCreate(target);
+        /*KeepStateFragment keepStateFragment = (KeepStateFragment) fragment;
 
-        List<Keep> keeps = KeepFactory.create(target);
+        List<Keep keeps = KeepFactory.create(target);
         if (keeps == null || keeps.size() <= 0) {
             logw("@KeepState not found, can not create injector !");
             return;
         }
         for (Keep keep : keeps) {
-            keep.onCreate(target, keepStateFragment);
-        }
+            //keep.onCreate(target, keepStateFragment);
+        }*/
     }
 
     /**
@@ -108,14 +110,14 @@ public class MonkeyKingBar {
             // no outstate kannot save state
             return;
         }
-        List<Keep> keeps = KeepFactory.create(target);
-        if (keeps == null || keeps.size() <= 0) {
+        Keep keep = KeepFactory.create(target);
+        if (keep == null ) {
             logw("@KeepState not found, can not create injector !");
             return;
         }
-        for (Keep keep : keeps) {
+        //for (Keep keep : keeps) {
             keep.onSaveInstanceState(target, outState);
-        }
+        //}
     }
 
     public static void keepStateOnSaveInstanceState(Activity target) {
@@ -124,19 +126,19 @@ public class MonkeyKingBar {
         }
         FragmentManager fragmentManager = target.getFragmentManager();
         Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG);
-        if (fragment == null || !(fragment instanceof KeepStateFragment)) {
-            fragment = new KeepStateFragment();
-            fragmentManager.beginTransaction().add(fragment, FRAGMENT_TAG).commit();
-        }
-        KeepStateFragment keepStateFragment = (KeepStateFragment) fragment;
-        List<Keep> keeps = KeepFactory.create(target);
-        if (keeps == null || keeps.size() <= 0) {
+        Keep keep = KeepFactory.create(target);
+        if (keep == null) {
             logw("@KeepState not found, can not create injector !");
             return;
         }
-        for (Keep keep : keeps) {
-            keep.onSaveInstanceState(target, keepStateFragment);
+        if (fragment == null || !(fragment instanceof Keep)) {
+            fragment = (Fragment) keep;
+            fragmentManager.beginTransaction().add(fragment, FRAGMENT_TAG).commit();
         }
+
+
+        keep.onSaveInstanceState(target);
+
     }
 
 

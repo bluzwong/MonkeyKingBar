@@ -16,6 +16,7 @@ public class ClassInjector {
     private static final String SUFFIX = "_MKB";
     private String unserUUID = UUID.randomUUID().toString();
 
+    private Map<String, String> fieldClassMap = new HashMap<String, String>();
     private List<String> fields;
     public ClassInjector(String classPackage, String className) {
         // com.github.bluzwong.mycache
@@ -76,6 +77,16 @@ public class ClassInjector {
         keepFields.clear();
         keepFields.addAll(tmpKeepInjects);
 
+        for (InjectFieldInjector injectField : injectFields) {
+           // fieldClassMap.put(injectField.getFieldType(), injectField.getFieldName());
+            fieldClassMap.put(injectField.getFieldName(), injectField.getFieldType());
+        }
+
+        for (KeepFieldInjector keepField : keepFields) {
+//            fieldClassMap.put(keepField.getFieldType(), keepField.getFieldName());
+            fieldClassMap.put(keepField.getFieldName(), keepField.getFieldType());
+        }
+
         needInject = injectFields.size() > 0;
         needKeep = keepFields.size() > 0;
 
@@ -92,8 +103,13 @@ public class ClassInjector {
         builder.append("import android.content.Intent;\n");
         builder.append("import android.os.Bundle;\n");
         builder.append("import java.util.UUID;\n");
+        builder.append("import android.app.Fragment;\n");
         // class and implements
         builder.append("public class ").append(this.className);
+        if (needKeep) {
+         builder.append(" extends Fragment ");
+
+        }
         if (needInject || needKeep) {
             builder.append(" implements ");
         }
@@ -111,6 +127,13 @@ public class ClassInjector {
         // start class
         builder.append(" {\n");
 
+        // field to hold
+
+        if (needKeep) {
+            for (Map.Entry<String, String> kv : fieldClassMap.entrySet()) {
+                builder.append(kv.getValue()).append(" ").append(kv.getKey()).append(";\n");
+            }
+        }
         // static fields
 
 
@@ -231,6 +254,50 @@ public class ClassInjector {
 
 
         if (needKeep) {
+
+            /* oncreate start*/
+
+
+            builder.append("@Override\n");
+            builder.append("public void onCreate(Bundle savedInstanceState) {\n");
+//            builder.append("MainActivity target = (MainActivity) object;\n");
+
+            builder.append("super.onCreate(savedInstanceState);\n");
+            builder.append("setRetainInstance(true);\n");
+            builder.append("if (savedInstanceState == null) {return;}\n");
+            builder.append("Object obj;\n");
+            for (KeepFieldInjector injector : keepFields) {
+                builder.append(injector.brewOnCreateJavaFragment());
+            }
+
+            builder.append("}\n");
+
+
+            /* oncreate end*/
+
+
+
+
+
+            /*onsave instance start*/
+
+
+
+            builder.append("@Override\n");
+            builder.append("public void onSaveInstanceState(Bundle outState) {\n");
+//            builder.append("MainActivity target = (MainActivity) object;\n");
+            for (KeepFieldInjector injector : keepFields) {
+                builder.append(injector.brewSaveStateFragment());
+            }
+
+            builder.append("super.onSaveInstanceState(outState);\n");
+            builder.append("}\n");
+
+
+            /*onsave instance end*/
+
+
+
             builder.append("\n");
 
             builder.append("@Override\n");
@@ -247,8 +314,6 @@ public class ClassInjector {
             builder.append("Object obj;\n");
             for (KeepFieldInjector field : keepFields) {
                 builder.append(field.brewOnCreateJava());
-                if (field.isAsProperty()) {
-                }
             }
             builder.append("}\n");
 
@@ -257,21 +322,19 @@ public class ClassInjector {
             builder.append("\n");
 
             builder.append("@Override\n");
-            builder.append("public void onCreate(Object object, KeepStateFragment keepStateFragment) {\n");
+            builder.append("public void onCreate(Object object) {\n");
 
             builder.append("if (object == null ) {\n");
             builder.append("    throw new IllegalStateException();\n");
             builder.append("}\n");
-            builder.append("if (keepStateFragment == null) {\n");
+           /* builder.append("if (keepStateFragment == null) {\n");
             builder.append("    return;\n");
-            builder.append("}\n");
+            builder.append("}\n");*/
 
             builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
-            builder.append("Object obj;\n");
+            //builder.append("Object obj;\n");
             for (KeepFieldInjector field : keepFields) {
-                builder.append(field.brewOnCreateJavaFragment());
-                if (field.isAsProperty()) {
-                }
+                builder.append(field.brewOnCreateActivity());
             }
             builder.append("}\n");
             // fragment end
@@ -308,14 +371,14 @@ public class ClassInjector {
             builder.append(" \n");
 
             builder.append("@Override \n");
-            builder.append("public void onSaveInstanceState(Object object, KeepStateFragment keepStateFragment) { \n");
+            builder.append("public void onSaveInstanceState(Object object) { \n");
             builder.append(" if (object == null) {\n");
             builder.append("    throw new IllegalStateException();\n");
             builder.append("} \n");
             builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
 
             for (KeepFieldInjector field : keepFields) {
-                builder.append(field.brewSaveStateFragment());
+                builder.append(field.brewSaveStateActivity());
             }
 
 

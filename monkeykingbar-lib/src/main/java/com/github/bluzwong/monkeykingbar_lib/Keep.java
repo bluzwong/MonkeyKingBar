@@ -8,7 +8,9 @@ import android.os.Bundle;
  */
 public interface Keep {
     void onCreate(Object object, Bundle savedInstanceState);
-    void onCreate(Object object, KeepStateFragment keepStateFragment);
+    void onCreate(Object object);
+//    void onCreate(Object object, KeepStateFragment keepStateFragment);
     void onSaveInstanceState(Object object, Bundle outState);
-    void onSaveInstanceState(Object object, KeepStateFragment keepStateFragment);
+    void onSaveInstanceState(Object object);
+//    void onSaveInstanceState(Object object, KeepStateFragment keepStateFragment);
 }

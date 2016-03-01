@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebViewFragment;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import com.github.bluzwong.monkeykingbar_lib.*;
@@ -46,7 +45,9 @@ public class MainActivity extends BaseActivity {
         MonkeyKingBar.init(this);
         MonkeyKingBar.injectExtras(this, getIntent(), savedInstanceState);
         log("注入字段完成");
+
         MonkeyKingBar.keepStateOnCreate(this);
+
         log("恢复字段完成");
 
         /*fragment = (KeepFragment) getFragmentManager().findFragmentByTag("KeepFragment");
@@ -64,7 +65,9 @@ public class MainActivity extends BaseActivity {
     protected void onSaveInstanceState(Bundle outState) {
         //fragment.getDataMap().put("MyClass", myClass);
         // 自动保存 @KeepState字段 数据
+
         MonkeyKingBar.keepStateOnSaveInstanceState(this);
+
         log("保存字段完成");
         super.onSaveInstanceState(outState);
     }

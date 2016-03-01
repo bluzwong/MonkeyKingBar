@@ -48,15 +48,25 @@ public class KeepFieldInjector {
 
     public String brewOnCreateJavaFragment() {
         StringBuilder builder = new StringBuilder();
-        builder.append(" obj = keepStateFragment.get(\"" + className + "\" +uuid);\n");
+        builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \"" + className + "\" +uuid);\n");
         builder.append(" if (obj != null) { ");
+        builder.append("    " + fieldName + " = (" + fieldType + ") obj;\n");
+        builder.append(" }");
+        return builder.toString();
+    }
+
+
+    public String brewOnCreateActivity() {
+        StringBuilder builder = new StringBuilder();
+        /*builder.append(" obj = keepStateFragment.get(\"" + className + "\" +uuid);\n");
+        builder.append(" if (obj != null) { ");*/
         if (isAsProperty()) {
 
-            builder.append("    target.set" + captureName(fieldName) + "((" + fieldType + ") obj);\n");
+            builder.append("    target.set" + captureName(fieldName) + "("+fieldName+");\n");
         } else {
-            builder.append("    target." + fieldName + " = (" + fieldType + ") obj;\n");
+            builder.append("    target." + fieldName + " = "+fieldName+";\n");
         }
-        builder.append(" }");
+        //builder.append(" }");
         return builder.toString();
     }
 
@@ -74,12 +84,20 @@ public class KeepFieldInjector {
 
     public String brewSaveStateFragment() {
         StringBuilder builder = new StringBuilder();
+            //builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
+        builder.append("MKBUtils.putExtra(outState,").append("\"" + className + "\"+uuid, " + fieldName).append(");\n");
+
+        return builder.toString();
+    }
+
+    public String brewSaveStateActivity() {
+        StringBuilder builder = new StringBuilder();
 
         if (isAsProperty()) {
-            builder.append("keepStateFragment.put(").append("\"" + className + "\"+uuid, target.get" + captureName(fieldName)).append("());\n");
+            builder.append(fieldName).append(" = target.get" + captureName(fieldName)).append("();\n");
         } else {
             //builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
-            builder.append("keepStateFragment.put(").append("\"" + className + "\"+uuid, target. " + fieldName).append(");\n");
+            builder.append(fieldName).append(" = target. " + fieldName).append(";\n");
         }
         return builder.toString();
     }

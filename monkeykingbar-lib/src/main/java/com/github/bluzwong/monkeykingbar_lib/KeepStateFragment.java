@@ -11,24 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class KeepStateFragment extends Fragment {
 
-    private Map<String, Object> dataMap = new ConcurrentHashMap<String, Object>();
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
 
-    public void put(String key, Object object) {
-        if (key == null || object == null) {
-            return;
-        }
-        dataMap.put(key, object);
-    }
 
-    public Object get(String key) {
-        if (key == null) {
-            return null;
-        }
-        return dataMap.get(key);
-    }
 }

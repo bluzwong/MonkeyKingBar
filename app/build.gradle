@@ -38,11 +38,11 @@ dependencies {
     //compile 'com.android.support:design:22.2.1'
     testCompile 'com.android.support:support-annotations:22.1.1'
     //compile 'com.github.bluzwong:monkeykingbar:-SNAPSHOT'
-//        compile project (':monkeykingbar-lib')
-//        kapt project (':monkeykingbar-processor')
+        compile project (':monkeykingbar-lib')
+        kapt project (':monkeykingbar-processor')
 
-    kapt 'com.github.bluzwong.monkeykingbar:monkeykingbar-processor:0.2.3'
-    compile ('com.github.bluzwong.monkeykingbar:monkeykingbar-lib:0.2.3@aar') { transitive = true }
+//    kapt 'com.github.bluzwong.monkeykingbar:monkeykingbar-processor:0.2.3'
+//    compile ('com.github.bluzwong.monkeykingbar:monkeykingbar-lib:0.2.3@aar') { transitive = true }
 
 //    kapt 'com.github.bluzwong.monkeykingbar:monkeykingbar-processor:-SNAPSHOT'
 //    compile('com.github.bluzwong.monkeykingbar:monkeykingbar-lib:-SNAPSHOT@aar') { transitive = true }
