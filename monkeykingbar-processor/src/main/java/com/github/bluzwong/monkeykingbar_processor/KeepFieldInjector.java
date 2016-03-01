@@ -32,9 +32,23 @@ public class KeepFieldInjector {
     public String getFieldType() {
         return fieldType;
     }
-    public String brewOnCreateJava(int index) {
+    public String brewOnCreateJava() {
         StringBuilder builder = new StringBuilder();
         builder.append(" obj = MKBUtils.getExtra(savedInstanceState, \"" + className + "\" +uuid);\n");
+        builder.append(" if (obj != null) { ");
+        if (isAsProperty()) {
+
+            builder.append("    target.set" + captureName(fieldName) + "((" + fieldType + ") obj);\n");
+        } else {
+            builder.append("    target." + fieldName + " = (" + fieldType + ") obj;\n");
+        }
+        builder.append(" }");
+        return builder.toString();
+    }
+
+    public String brewOnCreateJavaFragment() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(" obj = keepStateFragment.get(\"" + className + "\" +uuid);\n");
         builder.append(" if (obj != null) { ");
         if (isAsProperty()) {
 
@@ -54,6 +68,18 @@ public class KeepFieldInjector {
         } else {
             //builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
             builder.append("MKBUtils.putExtra(outState,").append("\"" + className + "\"+uuid, target. " + fieldName).append(");\n");
+        }
+        return builder.toString();
+    }
+
+    public String brewSaveStateFragment() {
+        StringBuilder builder = new StringBuilder();
+
+        if (isAsProperty()) {
+            builder.append("keepStateFragment.put(").append("\"" + className + "\"+uuid, target.get" + captureName(fieldName)).append("());\n");
+        } else {
+            //builder.append("MKBUtils.removeKeyIfNotUuid(\"" + className +"\", uuid);\n");
+            builder.append("keepStateFragment.put(").append("\"" + className + "\"+uuid, target. " + fieldName).append(");\n");
         }
         return builder.toString();
     }

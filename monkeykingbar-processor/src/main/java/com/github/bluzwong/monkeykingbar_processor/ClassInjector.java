@@ -245,23 +245,36 @@ public class ClassInjector {
 
             builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
             builder.append("Object obj;\n");
-
-           /* if (isKeepHasUnSerial()) {
-                builder.append("obj = MKBUtils.getExtra(savedInstanceState, \"MKB@"+unserUUID+"\");");
-                builder.append("String[] objs = (String[]) obj;\n");
-                builder.append("Object generalObj;\n");
-
-            }*/
-            int index = 0;
             for (KeepFieldInjector field : keepFields) {
-                builder.append(field.brewOnCreateJava(index));
+                builder.append(field.brewOnCreateJava());
                 if (field.isAsProperty()) {
-                    index++;
                 }
             }
-
             builder.append("}\n");
 
+
+            // fragment start
+            builder.append("\n");
+
+            builder.append("@Override\n");
+            builder.append("public void onCreate(Object object, KeepStateFragment keepStateFragment) {\n");
+
+            builder.append("if (object == null ) {\n");
+            builder.append("    throw new IllegalStateException();\n");
+            builder.append("}\n");
+            builder.append("if (keepStateFragment == null) {\n");
+            builder.append("    return;\n");
+            builder.append("}\n");
+
+            builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
+            builder.append("Object obj;\n");
+            for (KeepFieldInjector field : keepFields) {
+                builder.append(field.brewOnCreateJavaFragment());
+                if (field.isAsProperty()) {
+                }
+            }
+            builder.append("}\n");
+            // fragment end
 
             /*
             @Override
@@ -288,23 +301,29 @@ public class ClassInjector {
                 builder.append(field.brewSaveState());
             }
 
-            /*if (isKeepHasUnSerial()) {
-                builder.append("MKBUtils.putExtra(outState, \"MKB@"+unserUUID+"\", new String[] {");
+            builder.append("} \n");
 
-                boolean init = true;
-                for (KeepFieldInjector keepInject : keepFields) {
-                    if (keepInject.isAsProperty()) {
-                        if (!init) {
-                            builder.append(", ");
-                        }
-                        init = false;
-                        String key = keepInject.getFieldName() + "_key";
-                        builder.append(key);
-                    }
-                }
+            /* keep with fragment start*/
 
-                builder.append("} );\n");
-            }*/
+            builder.append(" \n");
+
+            builder.append("@Override \n");
+            builder.append("public void onSaveInstanceState(Object object, KeepStateFragment keepStateFragment) { \n");
+            builder.append(" if (object == null) {\n");
+            builder.append("    throw new IllegalStateException();\n");
+            builder.append("} \n");
+            builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
+
+            for (KeepFieldInjector field : keepFields) {
+                builder.append(field.brewSaveStateFragment());
+            }
+
+
+
+            /* keep with fragment end*/
+
+
+
             builder.append("} \n");
         }
 

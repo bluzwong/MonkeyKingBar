@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebViewFragment;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import com.github.bluzwong.monkeykingbar_lib.*;
@@ -34,6 +35,8 @@ public class MainActivity extends BaseActivity {
     TextView tvMsg;
     ScrollView scroll;
     TextView tv;
+    //private KeepFragment fragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,17 +46,25 @@ public class MainActivity extends BaseActivity {
         MonkeyKingBar.init(this);
         MonkeyKingBar.injectExtras(this, getIntent(), savedInstanceState);
         log("注入字段完成");
-        MonkeyKingBar.keepStateOnCreate(this, savedInstanceState);
+        MonkeyKingBar.keepStateOnCreate(this);
         log("恢复字段完成");
 
+        /*fragment = (KeepFragment) getFragmentManager().findFragmentByTag("KeepFragment");
+        if (fragment == null) {
+            fragment = new KeepFragment();
+            getFragmentManager().beginTransaction().add(fragment, "KeepFragment").commit();
+        } else {
+            myClass = (MyClass) fragment.getDataMap().get("MyClass");
+        }*/
         refreshTv();
         log("onCreate finish");
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        //fragment.getDataMap().put("MyClass", myClass);
         // 自动保存 @KeepState字段 数据
-        MonkeyKingBar.keepStateOnSaveInstanceState(this, outState);
+        MonkeyKingBar.keepStateOnSaveInstanceState(this);
         log("保存字段完成");
         super.onSaveInstanceState(outState);
     }

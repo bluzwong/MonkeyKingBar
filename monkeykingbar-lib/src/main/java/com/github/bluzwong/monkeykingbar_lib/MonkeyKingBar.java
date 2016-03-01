@@ -1,5 +1,8 @@
 package com.github.bluzwong.monkeykingbar_lib;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +15,8 @@ import java.util.List;
  */
 public class MonkeyKingBar {
     static Context sContext;
+    public static final String FRAGMENT_TAG = "$MKB$KeepStateFragment";
+
     private static void setContext(Context context) {
         if (sContext != null || context == null) {
             return;
@@ -40,22 +45,6 @@ public class MonkeyKingBar {
         }
     }
 
-    @Deprecated
-    public static void injectExtrasAsync(final Object target, final Intent intent, final ExtraInjectedListener listener) {
-        if (target == null || intent == null) {
-            return;
-        }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                injectExtras(target, intent);
-                if (listener != null) {
-                    listener.OnExtraInjected();
-                }
-            }
-        }).start();
-    }
-
     /**
      * inject when savedInstanceState is null
      * @param savedInstanceState
@@ -68,13 +57,7 @@ public class MonkeyKingBar {
         injectExtras(target, intent);
     }
 
-    public static void injectExtrasAsync(Object target,  Intent intent,Bundle savedInstanceState, final ExtraInjectedListener listener) {
-        if (savedInstanceState != null || target == null || intent == null) {
-            // got savedInstanceState do not need to inject
-            return;
-        }
-        injectExtrasAsync(target, intent, listener);
-    }
+
     /**
      * restore state when savedInstanceState is not null
      * @param savedInstanceState
@@ -94,21 +77,26 @@ public class MonkeyKingBar {
         }
     }
 
-    @Deprecated
-    public static void keepStateOnCrateAsync(final Object target, final Bundle savedInstanceState, final StateRestoredListener listener) {
-        if (target == null || savedInstanceState == null) {
+    public static void keepStateOnCreate(Activity target) {
+        if (target == null) {
+            // no target to keep
             return;
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                keepStateOnCreate(target, savedInstanceState);
-                if (listener!= null) {
-                    listener.OnStateRestoredInjected();
-                }
+        FragmentManager fragmentManager = target.getFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+        if (fragment == null || !(fragment instanceof KeepStateFragment)) {
+            return;
+        }
+        KeepStateFragment keepStateFragment = (KeepStateFragment) fragment;
 
-            }
-        }).start();
+        List<Keep> keeps = KeepFactory.create(target);
+        if (keeps == null || keeps.size() <= 0) {
+            logw("@KeepState not found, can not create injector !");
+            return;
+        }
+        for (Keep keep : keeps) {
+            keep.onCreate(target, keepStateFragment);
+        }
     }
 
     /**
@@ -130,13 +118,27 @@ public class MonkeyKingBar {
         }
     }
 
-    public interface ExtraInjectedListener {
-        void OnExtraInjected();
+    public static void keepStateOnSaveInstanceState(Activity target) {
+        if (target == null) {
+            return;
+        }
+        FragmentManager fragmentManager = target.getFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+        if (fragment == null || !(fragment instanceof KeepStateFragment)) {
+            fragment = new KeepStateFragment();
+            fragmentManager.beginTransaction().add(fragment, FRAGMENT_TAG).commit();
+        }
+        KeepStateFragment keepStateFragment = (KeepStateFragment) fragment;
+        List<Keep> keeps = KeepFactory.create(target);
+        if (keeps == null || keeps.size() <= 0) {
+            logw("@KeepState not found, can not create injector !");
+            return;
+        }
+        for (Keep keep : keeps) {
+            keep.onSaveInstanceState(target, keepStateFragment);
+        }
     }
 
-    public interface StateRestoredListener {
-        void OnStateRestoredInjected();
-    }
 
     private static void logw(String msg) {
         Log.w("MonkeyKingBar", msg);

@@ -1,5 +1,6 @@
 package com.github.bluzwong.monkeykingbar_lib;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 /**
@@ -7,5 +8,7 @@ import android.os.Bundle;
  */
 public interface Keep {
     void onCreate(Object object, Bundle savedInstanceState);
-    void onSaveInstanceState(Object Object, Bundle outState);
+    void onCreate(Object object, KeepStateFragment keepStateFragment);
+    void onSaveInstanceState(Object object, Bundle outState);
+    void onSaveInstanceState(Object object, KeepStateFragment keepStateFragment);
 }

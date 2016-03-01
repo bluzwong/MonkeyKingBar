@@ -19,12 +19,12 @@ public class BaseActivity extends Activity {
     @KeepState
     String bar_base;
 
-    @Override
+   /* @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MonkeyKingBar.injectExtras(this, getIntent(), savedInstanceState);
+        //MonkeyKingBar.injectExtras(this, getIntent(), savedInstanceState);
         log("注入字段 foo_base => " + foo_base + " bar_base => " + bar_base);
-        MonkeyKingBar.keepStateOnCreate(this, savedInstanceState);
+        //MonkeyKingBar.keepStateOnCreate(this, savedInstanceState);
         log("恢复字段 foo_base => " + foo_base + " bar_base => " + bar_base);
     }
 
@@ -32,9 +32,9 @@ public class BaseActivity extends Activity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         log("保存字段 foo_base => " + foo_base + " bar_base => " + bar_base);
-        MonkeyKingBar.keepStateOnSaveInstanceState(this, outState);
+        //MonkeyKingBar.keepStateOnSaveInstanceState(this, outState);
         super.onSaveInstanceState(outState);
-    }
+    }*/
 
     private void log(String msg) {
         Log.d("mkb@BaseActivity", msg);
