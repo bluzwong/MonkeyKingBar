@@ -51,6 +51,7 @@ dependencies {
 //    compile ('com.github.bluzwong.monkeykingbar:monkeykingbar-lib:0.2.2@aar') { transitive = true }
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    //compile 'com.github.bluzwong:monkeykingbar:-SNAPSHOT'
 }
 buildscript {
     ext.kotlin_version = '1.0.0-rc-1036'
