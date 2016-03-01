@@ -23,12 +23,34 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    lintOptions{
+    lintOptions {
         abortOnError false
     }
 
 
 }
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    testCompile('org.robolectric:robolectric:3.0-rc3') { exclude module: 'asm' }
+    //compile 'com.android.support:appcompat-v7:22.2.1'
+    //compile 'com.android.support:design:22.2.1'
+    testCompile 'com.android.support:support-annotations:22.1.1'
+    //compile 'com.github.bluzwong:monkeykingbar:-SNAPSHOT'
+//        compile project (':monkeykingbar-lib')
+//        kapt project (':monkeykingbar-processor')
+
+    kapt 'com.github.bluzwong.monkeykingbar:monkeykingbar-processor:0.2.3'
+    compile ('com.github.bluzwong.monkeykingbar:monkeykingbar-lib:0.2.3@aar') { transitive = true }
+
+//    kapt 'com.github.bluzwong.monkeykingbar:monkeykingbar-processor:-SNAPSHOT'
+//    compile('com.github.bluzwong.monkeykingbar:monkeykingbar-lib:-SNAPSHOT@aar') { transitive = true }
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+//    compile 'com.github.bluzwong:monkeykingbar:-SNAPSHOT'
+}
+
 repositories {
     maven { url "https://www.jitpack.io" }
     maven {
@@ -36,25 +58,9 @@ repositories {
     }
     mavenCentral()
 }
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    testCompile ('org.robolectric:robolectric:3.0-rc3') {exclude module: 'asm'}
-    //compile 'com.android.support:appcompat-v7:22.2.1'
-    //compile 'com.android.support:design:22.2.1'
-    testCompile 'com.android.support:support-annotations:22.1.1'
-    //compile 'com.github.bluzwong:monkeykingbar:-SNAPSHOT'
-    compile project (':monkeykingbar-lib')
-    kapt project (':monkeykingbar-processor')
-
-//    kapt 'com.github.bluzwong.monkeykingbar:monkeykingbar-processor:0.2.2'
-//    compile ('com.github.bluzwong.monkeykingbar:monkeykingbar-lib:0.2.2@aar') { transitive = true }
-
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    //compile 'com.github.bluzwong:monkeykingbar:-SNAPSHOT'
-}
 buildscript {
     ext.kotlin_version = '1.0.0-rc-1036'
+
     repositories {
         jcenter {
             url 'http://jcenter.bintray.com'
