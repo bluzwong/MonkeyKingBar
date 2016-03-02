@@ -129,6 +129,7 @@ public class ClassInjector {
 
         // field to hold
 
+        builder.append("private boolean dataLost = true;\n");
         if (needKeep) {
             for (Map.Entry<String, String> kv : fieldClassMap.entrySet()) {
                 builder.append(kv.getValue()).append(" ").append(kv.getKey()).append(";\n");
@@ -331,6 +332,7 @@ public class ClassInjector {
             builder.append("    return;\n");
             builder.append("}\n");*/
 
+            builder.append("if (dataLost) { onCreate(object, getArguments()); return;}\n");
             builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
             //builder.append("Object obj;\n");
             for (KeepFieldInjector field : keepFields) {
@@ -382,7 +384,7 @@ public class ClassInjector {
             }
 
 
-
+            builder.append("dataLost = false;\n");
             /* keep with fragment end*/
 
 
