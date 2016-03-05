@@ -8,7 +8,7 @@ import java.util.*;
 public class InjectFactory {
 
     private static final Map<String, List<Inject>> injectionMap = new HashMap<>();
-    static List<Inject> create(Object target) {
+    public static List<Inject> create(Object target) {
 
         Class<?> targetClass = target.getClass();
         String clzName = targetClass.getCanonicalName();

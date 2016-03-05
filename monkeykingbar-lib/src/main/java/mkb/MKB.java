@@ -1,4 +1,4 @@
-package com.github.bluzwong.monkeykingbar_lib;
+package mkb;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -6,6 +6,10 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import com.github.bluzwong.monkeykingbar_lib.Inject;
+import com.github.bluzwong.monkeykingbar_lib.InjectFactory;
+import com.github.bluzwong.monkeykingbar_lib.Keep;
+import com.github.bluzwong.monkeykingbar_lib.KeepFactory;
 
 import java.util.List;
 

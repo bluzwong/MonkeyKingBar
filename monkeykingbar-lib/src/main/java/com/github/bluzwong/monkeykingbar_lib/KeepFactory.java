@@ -9,7 +9,7 @@ import java.util.Map;
 public class KeepFactory {
 
     private static final Map<String, Keep> keepMap = new HashMap<>();
-    static Keep create(Object target) {
+    public static Keep create(Object target) {
 
         Class<?> targetClass = target.getClass();
         String clzName = targetClass.getCanonicalName();

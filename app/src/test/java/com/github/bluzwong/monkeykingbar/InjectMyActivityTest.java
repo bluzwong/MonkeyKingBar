@@ -1,10 +1,9 @@
 package com.github.bluzwong.monkeykingbar;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import com.github.bluzwong.monkeykingbar_lib.MKB;
+import mkb.MKB;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
