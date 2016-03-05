@@ -142,6 +142,39 @@ public class MonkeyKingBar {
     }
 
 
+    /**
+     * avoid fragment has not a bundle
+     * @param fragment
+     */
+    public static void initFragment(Fragment fragment) {
+        if (fragment.getArguments() == null) {
+            fragment.setArguments(new Bundle());
+        }
+    }
+
+    /**
+     * do save work if need, better to call it when get the data for the situation that fragment's detaching will not call onSaveInstanceState().
+     * or save at onSaveInstanceState()
+     * @param fragment
+     */
+    public static void saveState(Fragment fragment) {
+        keepStateOnSaveInstanceState(fragment, fragment.getArguments());
+    }
+
+    /**
+     * restore saved state from keepStateOnSaveInstanceState or saveState
+     * @param fragment
+     * @param savedInstanceState
+     */
+    public static void onCreateView(Fragment fragment, Bundle savedInstanceState) {
+        Bundle arguments = fragment.getArguments();
+        if (savedInstanceState != null) {
+            keepStateOnCreate(fragment, savedInstanceState);
+        } else if (arguments != null) {
+            keepStateOnCreate(fragment, arguments);
+        }
+    }
+
     private static void logw(String msg) {
         Log.w("MonkeyKingBar", msg);
     }
