@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class MKB {
     public static final String FRAGMENT_TAG = "$MKB$KeepStateFragment";
-
+    public static final String FLAG_LOAD_CALLED = "$FLAG_LOAD_CALLED$";
     /**
      * avoid fragment has not a bundle
      *
@@ -108,7 +108,11 @@ public class MKB {
      * @param fragment
      */
     public static void saveState(Fragment fragment) {
-        saveState(fragment, fragment.getArguments());
+        Bundle bundle = fragment.getArguments();
+        if (bundle.getBoolean(FLAG_LOAD_CALLED, false)) {
+            saveState(fragment, bundle);
+            bundle.putBoolean(FLAG_LOAD_CALLED, false);
+        }
     }
 
 
@@ -184,13 +188,11 @@ public class MKB {
      * restore saved state from saveState or saveState
      *
      * @param fragment
-     * @param savedInstanceState
      */
-    public static boolean loadState(Fragment fragment, Bundle savedInstanceState) {
+    public static boolean loadState(Fragment fragment) {
         Bundle arguments = fragment.getArguments();
-        if (savedInstanceState != null) {
-            return loadState((Object) fragment, savedInstanceState);
-        } else if (arguments != null) {
+         if (arguments != null) {
+            arguments.putBoolean(FLAG_LOAD_CALLED, true);
             return loadState((Object) fragment, arguments);
         }
         if (fragment instanceof ILoadStateListener) {
