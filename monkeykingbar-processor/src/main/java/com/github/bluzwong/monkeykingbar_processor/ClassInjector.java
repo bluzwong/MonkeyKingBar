@@ -302,20 +302,27 @@ public class ClassInjector {
             builder.append("\n");
 
             builder.append("@Override\n");
-            builder.append("public void onCreate(Object object, Bundle savedInstanceState) {\n");
+            builder.append("public boolean onCreate(Object object, Bundle savedInstanceState) {\n");
 
             builder.append("if (object == null) {\n");
-            builder.append("    throw new IllegalStateException();\n");
+            builder.append("    return false;\n");
             builder.append("}\n");
             builder.append("if (savedInstanceState == null) {\n");
-            builder.append("    return;\n");
+            builder.append("    return false;\n");
             builder.append("}\n");
+
+
 
             builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
             builder.append("Object obj;\n");
+
+            builder.append("obj = MKBUtils.getExtra(savedInstanceState, \"dataNotLost@\" + uuid);\n\n");
+            builder.append("if ( obj == null || !((boolean) obj)) { return false;}\n");
+
             for (KeepFieldInjector field : keepFields) {
                 builder.append(field.brewOnCreateJava());
             }
+            builder.append("return true;\n");
             builder.append("}\n");
 
 
@@ -323,21 +330,22 @@ public class ClassInjector {
             builder.append("\n");
 
             builder.append("@Override\n");
-            builder.append("public void onCreate(Object object) {\n");
+            builder.append("public boolean onCreate(Object object) {\n");
 
             builder.append("if (object == null ) {\n");
-            builder.append("    throw new IllegalStateException();\n");
+            builder.append("    return false;\n");
             builder.append("}\n");
            /* builder.append("if (keepStateFragment == null) {\n");
             builder.append("    return;\n");
             builder.append("}\n");*/
 
-            builder.append("if (dataLost) { onCreate(object, getArguments()); return;}\n");
+            builder.append("if (dataLost) { onCreate(object, getArguments()); return false;}\n");
             builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
             //builder.append("Object obj;\n");
             for (KeepFieldInjector field : keepFields) {
                 builder.append(field.brewOnCreateActivity());
             }
+            builder.append("return true;");
             builder.append("}\n");
             // fragment end
 
@@ -362,6 +370,8 @@ public class ClassInjector {
             builder.append("} \n");
             builder.append(originClassName).append(" target = (").append(originClassName).append(") object;\n");
 
+
+            builder.append("MKBUtils.putExtra(outState,\"dataNotLost@\" + uuid, true);\n\n");
             for (KeepFieldInjector field : keepFields) {
                 builder.append(field.brewSaveState());
             }

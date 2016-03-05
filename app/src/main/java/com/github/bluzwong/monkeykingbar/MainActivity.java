@@ -42,11 +42,10 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.content_main);
         initView();
 
-        MonkeyKingBar.init(this);
-        MonkeyKingBar.injectExtras(this, getIntent(), savedInstanceState);
+        MKB.inject(this, getIntent(), savedInstanceState);
         log("注入字段完成");
 
-        MonkeyKingBar.keepStateOnCreate(this);
+        MKB.loadState(this);
 
         log("恢复字段完成");
 
@@ -66,7 +65,7 @@ public class MainActivity extends BaseActivity {
         //fragment.getDataMap().put("MyClass", myClass);
         // 自动保存 @KeepState字段 数据
 
-        MonkeyKingBar.keepStateOnSaveInstanceState(this);
+        MKB.saveState(this);
 
         log("保存字段完成");
         super.onSaveInstanceState(outState);

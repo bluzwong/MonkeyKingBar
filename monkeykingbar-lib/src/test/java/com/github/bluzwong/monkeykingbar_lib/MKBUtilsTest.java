@@ -26,7 +26,6 @@ public class MKBUtilsTest {
     @Before
     public void setUp() throws Exception {
         context = RuntimeEnvironment.application;
-        MonkeyKingBar.init(context);
     }
 
 

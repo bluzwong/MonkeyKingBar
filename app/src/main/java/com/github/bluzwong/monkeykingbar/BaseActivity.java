@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import com.github.bluzwong.monkeykingbar_lib.*;
-import com.github.bluzwong.monkeykingbar_lib.MonkeyKingBar;
 
 /**
  * Created by Bruce-Home on 2016/1/22.

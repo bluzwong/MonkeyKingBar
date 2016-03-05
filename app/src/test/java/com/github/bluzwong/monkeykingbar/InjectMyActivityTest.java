@@ -4,8 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import com.github.bluzwong.monkeykingbar_lib.MKBUtils;
-import com.github.bluzwong.monkeykingbar_lib.MonkeyKingBar;
+import com.github.bluzwong.monkeykingbar_lib.MKB;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,6 @@ public class InjectMyActivityTest {
     @Before
     public void setUp() throws Exception {
         Context = RuntimeEnvironment.application;
-        MonkeyKingBar.init(Context);
     }
 
     @After
@@ -46,10 +44,10 @@ public class InjectMyActivityTest {
         myActivity.myClass = myClass;
 
         Bundle outState = new Bundle();
-        MonkeyKingBar.keepStateOnSaveInstanceState(myActivity, outState);
+        MKB.saveState(myActivity, outState);
 
         MyActivity myActivity2 = new MyActivity();
-        MonkeyKingBar.keepStateOnCreate(myActivity2, outState);
+        MKB.loadState(myActivity2, outState);
 
         assertEquals(myActivity2.foo, 444);
         assertEquals(myActivity2.bar, "barrr");
@@ -69,7 +67,7 @@ public class InjectMyActivityTest {
         Intent intent = MyActivity_MKB.putExtra(new Intent(), 333, "bar11", myClass);
         //controller.create(intent.getExtras());
         MyActivity myActivity = new MyActivity();
-        MonkeyKingBar.injectExtras(myActivity, intent);
+        MKB.inject(myActivity, intent);
 
         assertEquals(myActivity.foo, 333);
         assertEquals(myActivity.bar, "bar11");
