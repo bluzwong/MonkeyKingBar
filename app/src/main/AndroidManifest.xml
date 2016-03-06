@@ -38,6 +38,14 @@
         </activity>
 
         <activity android:name=".example.atfragment.FragmentActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+
+        <activity android:name=".example.atfragment.viewpager.ViewPagerWithFragmentActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

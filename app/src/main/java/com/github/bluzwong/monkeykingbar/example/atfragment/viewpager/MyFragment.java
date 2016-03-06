@@ -1,4 +1,4 @@
-package com.github.bluzwong.monkeykingbar.example.atfragment;
+package com.github.bluzwong.monkeykingbar.example.atfragment.viewpager;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import com.github.bluzwong.monkeykingbar.R;
 /**
  * Created by Bruce-Home on 2016/3/6.
  */
-public class MyRetainedFragment extends Fragment {
+public class MyFragment extends Fragment {
     SwipeRefreshLayout refreshLayout;
     TextView textView;
     int count = 0;
@@ -21,7 +21,6 @@ public class MyRetainedFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     @Nullable
