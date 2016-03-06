@@ -46,7 +46,7 @@ public class MainActivity extends BaseActivity {
         MKB.inject(this, getIntent(), savedInstanceState);
         log("注入字段完成");
 
-        MKB.loadState(this);
+        MKB.loadState(this, savedInstanceState);
 
         log("恢复字段完成");
 
@@ -66,7 +66,7 @@ public class MainActivity extends BaseActivity {
         //fragment.getDataMap().put("MyClass", myClass);
         // 自动保存 @KeepState字段 数据
 
-        MKB.saveState(this);
+        MKB.saveState(this, outState);
 
         log("保存字段完成");
         super.onSaveInstanceState(outState);

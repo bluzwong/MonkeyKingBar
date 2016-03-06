@@ -82,6 +82,7 @@ public class MKB {
         //}
     }
 
+    @Deprecated
     public static void saveState(Activity target) {
         if (target == null) {
             return;
@@ -159,6 +160,7 @@ public class MKB {
      *
      * @param target
      */
+    @Deprecated
     public static boolean loadState(Activity target) {
         if (target == null) {
             // no target to keep
