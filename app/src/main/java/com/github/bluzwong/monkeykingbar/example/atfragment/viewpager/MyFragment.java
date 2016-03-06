@@ -18,6 +18,9 @@ public class MyFragment extends Fragment {
     TextView textView;
     int count = 0;
 
+    public MyFragment() {
+        setArguments(new Bundle());
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,9 +30,11 @@ public class MyFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_state, container, false);
-        if (savedInstanceState != null) {
-            count = savedInstanceState.getInt("KEY_COUNT", 0);
-        }
+
+        count = getArguments().getInt("KEY_COUNT", 0);
+
+        getArguments().putBoolean("loaded", true);
+
         refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh);
         textView = (TextView) view.findViewById(R.id.tv);
 
@@ -42,6 +47,10 @@ public class MyFragment extends Fragment {
                         count++;
                         refreshTv();
                         refreshLayout.setRefreshing(false);
+                        if (getArguments().getBoolean("loaded", false)) {
+                            getArguments().putInt("KEY_COUNT", count);
+                            getArguments().putBoolean("loaded", false);
+                        }
                     }
                 }, 1000);
             }
@@ -54,7 +63,7 @@ public class MyFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("KEY_COUNT", count);
+
     }
 
     void refreshTv() {
