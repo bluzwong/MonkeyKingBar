@@ -23,7 +23,7 @@ public class ViewPagerWithFragmentActivity extends Activity {
 
         viewPager = (ViewPager) findViewById(R.id.vp);
 
-        viewPager.setAdapter(new FragmentStatePagerAdapter(getFragmentManager()) {
+        viewPager.setAdapter(new FragmentPagerAdapter(getFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
                 return new MyFragment();
