@@ -130,7 +130,7 @@ public class MKB {
         if (savedInstanceState == null ) {
             // no state to keep
             if (target instanceof ILoadStateListener) {
-                ((ILoadStateListener) target).stateNotLoad();
+                ((ILoadStateListener) target).onStateNotRestored();
             }
             return false;
         }
@@ -138,7 +138,7 @@ public class MKB {
         if (keep == null) {
             logw("@KeepState not found, can not create injector !");
             if (target instanceof ILoadStateListener) {
-                ((ILoadStateListener) target).stateNotLoad();
+                ((ILoadStateListener) target).onStateNotRestored();
             }
             return false;
         }
@@ -146,9 +146,9 @@ public class MKB {
         boolean loadOK = keep.onCreate(target, savedInstanceState);
         if (target instanceof ILoadStateListener) {
             if (loadOK) {
-                ((ILoadStateListener) target).loadStateOK();
+                ((ILoadStateListener) target).onStateRestored();
             } else {
-                ((ILoadStateListener) target).stateNotLoad();
+                ((ILoadStateListener) target).onStateNotRestored();
             }
         }
         return loadOK;
@@ -170,7 +170,7 @@ public class MKB {
         Fragment fragment = fragmentManager.findFragmentByTag(FRAGMENT_TAG);
         if (fragment == null || !(fragment instanceof Keep)) {
             if (target instanceof ILoadStateListener) {
-                ((ILoadStateListener) target).stateNotLoad();
+                ((ILoadStateListener) target).onStateNotRestored();
             }
             return false;
         }
@@ -178,9 +178,9 @@ public class MKB {
         boolean loadOK = keep.onCreate(target);
         if (target instanceof ILoadStateListener) {
             if (loadOK) {
-                ((ILoadStateListener) target).loadStateOK();
+                ((ILoadStateListener) target).onStateRestored();
             } else {
-                ((ILoadStateListener) target).stateNotLoad();
+                ((ILoadStateListener) target).onStateNotRestored();
             }
         }
         return loadOK;
@@ -198,15 +198,15 @@ public class MKB {
             return loadState((Object) fragment, arguments);
         }
         if (fragment instanceof ILoadStateListener) {
-            ((ILoadStateListener) fragment).stateNotLoad();
+            ((ILoadStateListener) fragment).onStateNotRestored();
         }
         return false;
     }
 
     public interface ILoadStateListener {
-        void loadStateOK();
+        void onStateRestored();
 
-        void stateNotLoad();
+        void onStateNotRestored();
     }
 
     private static void logw(String msg) {
