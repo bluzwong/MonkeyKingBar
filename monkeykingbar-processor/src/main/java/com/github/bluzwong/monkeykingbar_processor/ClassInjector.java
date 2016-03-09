@@ -138,7 +138,7 @@ public class ClassInjector {
         // static fields
 
 
-        builder.append("private static final String uuid = UUID.randomUUID().toString();\n");
+        builder.append("private static final String uuid = \"" + UUID.randomUUID().toString()+"\";\n");
 
         // injectFields
         if (needInject) {
